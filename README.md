@@ -14,8 +14,6 @@
 
 [Ubuntu](Entorno%20con%20Hercules%20&%20TK4%20fb5e9db0c5934b0182de09224245c305/Ubuntu%20038b959da7274c8da0bae9e7012197dd.md)
 
-[Navegación TSO](Entorno%20con%20Hercules%20&%20TK4%20fb5e9db0c5934b0182de09224245c305/Navegacio%CC%81n%20TSO%202dd91b7c77184be49d9f6e5268ed990d.md)
-
 **Iniciar sesión en el 3270**
 
 ```bash
