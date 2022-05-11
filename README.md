@@ -1,2 +1,2 @@
-# cobol-practice
-Some JCL and COBOL codes, just for practice
+# COBOL
+Some JCL and COBOL codes, just for practice.
