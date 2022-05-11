@@ -4,14 +4,14 @@
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        77  WSS-SWITCHES                PIC X(01) VALUE '1'.
-         88 WSS-FIN                              VALUE '0'.
+           88 WSS-FIN                            VALUE '0'.
        01  WSV-VARIABLES.
            05 WSV-NUMERO-1             PIC 9(03) VALUE ZEROS.
            05 WSV-MASCARA              PIC Z(03) VALUE ZEROS.
        01  WSC-CONSTANTES.
            05 WSC-TEXTO-A              PIC X(06) VALUE 'PLATZI'.
            05 WSC-TEXTO-2.
-             10 WSC-TEX-2              PIC X(05) VALUE 'COBOL'.
+              10 WSC-TEX-2             PIC X(05) VALUE 'COBOL'.
 
        PROCEDURE DIVISION.
            DISPLAY 'WSC-CONSTANTES CONTIENE: '   WSC-CONSTANTES

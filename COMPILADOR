@@ -1,6 +1,6 @@
 //COBOL PROC SOUT='*'                                                   00000109
 //* ************************************************************        00000209
-//*                                                                     00000309
+//*  SE DEBE SUBIR A 'SYS2.PROCLIB(COBOL)'                              00000309
 //* OBJET. DE PROCEDURE: COMPILAR EL PROGRAMA COBOL, DESPUES HACER      00000409
 //*                      LINKEDIT DEL MODULO DE CARGA.                  00000509
 //*                                                                     00000609
