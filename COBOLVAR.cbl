@@ -14,8 +14,8 @@ IDENTIFICATION DIVISION.
              10 WSC-TEX-2              PIC X(05) VALUE 'COBOL'. 
                                                                 
        PROCEDURE DIVISION.                                      
-           DISPLAY 'WSC-CONSTANTES CONTIENE.: 'WSC-CONSTANTES   
-           DISPLAY 'EL VALOR DE L AVARIABLE 1: ' WSV-NUMERO-1   
+           DISPLAY 'WSC-CONSTANTES CONTIENE: 'WSC-CONSTANTES   
+           DISPLAY 'EL VALOR DE LA VARIABLE 1: ' WSV-NUMERO-1   
            DISPLAY 'EL VALOR DEL SWITCH     :  ' WSS-SWITCHES   
            MOVE 5                      TO WSV-NUMERO-1          
            MOVE WSV-NUMERO-1           TO WSV-MASCARA           

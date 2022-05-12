@@ -7,8 +7,8 @@
        DATA DIVISION.
        WORKING-STORAGE SECTION.
        01 WSV-VARIABLES.
-           05 WSV-CONTADOR              PIC 9(3) VALUE ZEROS.
-           05 WSV-INC                   PIC 9(3) VALUE ZEROS.
+           05 WSV-CONTADOR              PIC Z(03) VALUE ZEROS.
+           05 WSV-INC                   PIC Z(03) VALUE ZEROS.
       *CUARTA SECCION - PROCESOS
        PROCEDURE DIVISION.
        0-10-MAIN.
@@ -26,4 +26,4 @@
            DISPLAY 'EL VALOR DEL WHILE ES DE: ' WSV-INC.
        050-RETURN.
            STOP RUN.
-       050-050-FIN.
+       050-FIN.
