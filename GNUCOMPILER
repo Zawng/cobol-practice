@@ -4,7 +4,11 @@ function c {
   PROGRAM=${PROGRAM//.cbl}
   FILE="./$PROGRAM"
   [ -e $FILE ] && rm $PROGRAM
-  cobc -x $1
-  echo "Progam compiled successfully"
-  ./$PROGRAM &&  [ -e $FILE ] && rm $PROGRAM
+  if cobc -x $1; then
+    echo "Program compiled successfully"
+    ./$PROGRAM
+    [ -e $FILE ] && rm $PROGRAM
+  else
+    echo "Fallo al compilar"
+  fi
 }
