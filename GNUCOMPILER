@@ -5,10 +5,10 @@ function c {
   FILE="./$PROGRAM"
   [ -e $FILE ] && rm $PROGRAM
   if cobc -x $1; then
-    echo "Program compiled successfully"
+    echo "Program compiled successfully."
     ./$PROGRAM
     [ -e $FILE ] && rm $PROGRAM
   else
-    echo "Fallo al compilar"
+    echo "Failed to compile."
   fi
 }
