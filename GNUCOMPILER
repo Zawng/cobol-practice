@@ -6,6 +6,5 @@ function c {
   [ -e $FILE ] && rm $PROGRAM
   cobc -x $1
   echo "Progam compiled successfully"
-  ./$PROGRAM
-  [ -e $FILE ] && rm $PROGRAM
+  ./$PROGRAM &&  [ -e $FILE ] && rm $PROGRAM
 }
