@@ -1,0 +1,11 @@
+# Function to compile and exec a COBOL program
+function c {
+  PROGRAM=$1
+  PROGRAM=${PROGRAM//.cbl}
+  FILE="./$PROGRAM"
+  [ -e $FILE ] && rm $PROGRAM
+  cobc -x $1
+  echo "Progam compiled successfully"
+  ./$PROGRAM
+  [ -e $FILE ] && rm $PROGRAM
+}
