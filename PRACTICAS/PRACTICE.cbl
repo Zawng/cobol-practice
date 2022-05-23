@@ -1,10 +1,10 @@
-      * TODO: ERRORES EN LAS VALIDACIONES, SE EJECUTAN TODAS O SIGUEN
+      * TODO: ¿POSIBLE MANERA DE EFECTUAR UNA OPCIÓN COMPUTADA?
       ******************************************************************
-      * Author: Edwin Páez
-      * Date: 16-05-22
-      * Purpose: Practice COBOL
+      * AUTHOR: EDWIN PÁEZ
+      * DATE: 16-05-22
+      * PURPOSE: PRACTICE COBOL
       ******************************************************************
-      * Sección #1 - Obligatoria
+      * SECCIÓN #1 - OBLIGATORIA
        IDENTIFICATION DIVISION.
        PROGRAM-ID.                PRACTICE.
        AUTHOR.                    EDWIN-PAEZ.
@@ -13,10 +13,10 @@
        DATE-COMPILED.             16/05/22.
        REMARKS.                   CALCULADORA BÁSICA.
 
-      * Sección #2
+      * SECCIÓN #2
        ENVIRONMENT DIVISION.
 
-      * Sección #3
+      * SECCIÓN #3
        DATA DIVISION.
        WORKING-STORAGE SECTION.
 
@@ -41,15 +41,16 @@
              10 WSC-NOMBRE-R      PIC X(10) VALUE ' 2: RESTA '.
              10 WSC-NOMBRE-M      PIC X(19) VALUE ' 3: MULTIPLICACION '.
              10 WSC-NOMBRE-D      PIC X(13) VALUE ' 4: DIVISION '.
-             10 WSC-NOMBRE-C      PIC X(14) VALUE ' 5: COMPUTADA '.
 
-      * Sección #4
+      * SECCIÓN #4
        PROCEDURE DIVISION.
        010-MAIN.
+           PERFORM 015-ITERATOR UNTIL WSV-OPCION = 0.
+
+       015-ITERATOR.
            PERFORM 020-HEADER.
            PERFORM 030-DATOS.
            PERFORM 040-VALIDACIONES.
-           PERFORM 0100-STOP.
 
        020-HEADER.
            DISPLAY WSC-FILL.
@@ -62,51 +63,51 @@
            DISPLAY WSC-NOMBRE-R.
            DISPLAY WSC-NOMBRE-M.
            DISPLAY WSC-NOMBRE-D.
-           DISPLAY WSC-NOMBRE-C.
+           DISPLAY " 0: SALIR DEL SISTEMA.".
            DISPLAY "OPCIÓN: "
            ACCEPT WSV-OPCION.
 
-
        040-VALIDACIONES.
-           IF WSV-OPCION > 5 OR < 0 THEN
-             PERFORM 060-ERROR-OPCION
-           ELSE
-             IF WSV-OPCION EQUAL 1 THEN
-                 DISPLAY "OPCIÓN SELECCIONADA: SUMA"
-                 PERFORM 070-INGRESAR.
-                 PERFORM 051-SUMA.
-             IF WSV-OPCION EQUAL 2 THEN
-                 DISPLAY "OPCIÓN SELECCIONADA: RESTA"
-                 PERFORM 070-INGRESAR.
-                 PERFORM 052-RESTA.
-             IF WSV-OPCION EQUAL 3 THEN
-                 DISPLAY "OPCIÓN SELECCIONADA: MULTIPLICACION"
-                 PERFORM 070-INGRESAR.
-                 PERFORM 053-MULTIPLICACION.
-             IF WSV-OPCION EQUAL 4 THEN
-                 DISPLAY "OPCIÓN SELECCIONADA: DIVISION"
-                 PERFORM 070-INGRESAR.
-                 PERFORM 054-DIVISION.
-             IF WSV-OPCION EQUAL 5 THEN
-                 DISPLAY "OPCIÓN SELECCIONADA: COMPUTADA"
-                 PERFORM 070-INGRESAR.
-                 PERFORM 055-COMPUTADA.
+           EVALUATE WSV-OPCION
+               WHEN 0
+                   DISPLAY "APLICACIÓN TERMINADA"
+                   PERFORM 0100-STOP
+               WHEN 1
+                   DISPLAY "OPCIÓN SELECCIONADA: SUMA"
+                   PERFORM 070-INGRESAR
+                   PERFORM 051-SUMA
+                   CALL "C$SLEEP" USING 2 END-CALL
+               WHEN 2
+                   DISPLAY "OPCIÓN SELECCIONADA: RESTA"
+                   PERFORM 070-INGRESAR
+                   PERFORM 052-RESTA
+                   CALL "C$SLEEP" USING 2 END-CALL
+               WHEN 3
+                   DISPLAY "OPCIÓN SELECCIONADA: MULTIPLICACION"
+                   PERFORM 070-INGRESAR
+                   PERFORM 053-MULTIPLICACION
+                   CALL "C$SLEEP" USING 2 END-CALL
+               WHEN 4
+                   DISPLAY "OPCIÓN SELECCIONADA: DIVISION"
+                   PERFORM 070-INGRESAR
+                   PERFORM 054-DIVISION
+                   CALL "C$SLEEP" USING 2 END-CALL
+               WHEN OTHER
+                   PERFORM 060-ERROR-OPCION
+           END-EVALUATE.
 
        050-ARITMETICA.
        051-SUMA.
-           ADD WSV-NUM-1 TO WSV-NUM-2 GIVING WSV-TOTAL.                 Sumar
+           ADD WSV-NUM-1 TO WSV-NUM-2 GIVING WSV-TOTAL.                 SUMAR
            DISPLAY "RESULTADO :" WSV-TOTAL.
        052-RESTA.
-           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL.          Resta
+           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL.          RESTA
            DISPLAY "RESULTADO :" WSV-TOTAL.
        053-MULTIPLICACION.
-           MULTIPLY WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.            Multiplicación
+           MULTIPLY WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.            MULTIPLICACIÓN
            DISPLAY "RESULTADO :" WSV-TOTAL.
        054-DIVISION.
-           DIVIDE WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.              División
-           DISPLAY "RESULTADO :" WSV-TOTAL.
-       055-COMPUTADA.
-           COMPUTE WSV-TOTAL = ((10 + 20) * 2) / 3.                     Compuesta
+           DIVIDE WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.              DIVISIÓN
            DISPLAY "RESULTADO :" WSV-TOTAL.
 
        060-ERROR-OPCION.
@@ -114,10 +115,10 @@
            PERFORM 0100-STOP.
 
        070-INGRESAR.
-           DISPLAY 'POR FAVOR, INGRESE LOS VALORES DE LOS NÚMEROS'.
-           DISPLAY 'NÚMERO 1:'
+           DISPLAY 'INGRESE LOS VALORES:'.
+           DISPLAY 'NÚMERO 1:'.
            ACCEPT WSV-NUM-1.
-           DISPLAY 'NÚMERO 2:'
+           DISPLAY 'NÚMERO 2:'.
            ACCEPT WSV-NUM-2.
 
        0100-STOP.
