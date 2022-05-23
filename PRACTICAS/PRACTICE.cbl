@@ -46,6 +46,7 @@
        PROCEDURE DIVISION.
        010-MAIN.
            PERFORM 020-ITERATOR UNTIL WSV-OPCION EQUAL 0.
+           DISPLAY "CALCULADORA HECHA POR: " QUOTE WSV-NOMBRE QUOTE
            STOP RUN.
 
        020-ITERATOR.
@@ -89,8 +90,8 @@
                    PERFORM 064-DIVISION
                    CALL "C$SLEEP" USING 2 END-CALL
                WHEN OTHER
-                   DISPLAY "OPCIÓN NO ENCONTRADA."
-                   PERFORM 080-STOP
+                   DISPLAY "OPCIÓN NO ENCONTRADA, FINALIZANDO."
+                   STOP RUN
            END-EVALUATE.
 
        060-ARITMETICA.
@@ -113,7 +114,3 @@
            ACCEPT WSV-NUM-1.
            DISPLAY 'NÚMERO 2:'.
            ACCEPT WSV-NUM-2.
-
-       080-STOP.
-           STOP RUN.
-           END PROGRAM PRACTICE.
