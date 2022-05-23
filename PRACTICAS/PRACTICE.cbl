@@ -65,7 +65,7 @@
            DISPLAY WSC-NOMBRE-R.
            DISPLAY WSC-NOMBRE-M.
            DISPLAY WSC-NOMBRE-D.
-           DISPLAY " 5: SALIR DEL SISTEMA.".
+           DISPLAY " 0: SALIR DEL SISTEMA.".
            DISPLAY "OPCIÓN: "
            ACCEPT WSV-OPCION.
 
