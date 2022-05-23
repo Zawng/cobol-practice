@@ -22,10 +22,10 @@
 
        01 WSV-VARIABLES.
           05 WSV-NOMBRE           PIC X(11) VALUE 'EDWIN PÁEZ'.
-          05 WSV-OPCION           PIC X VALUE ZEROS.
+          05 WSV-OPCION           PIC X VALUE LOW-VALUE .
           05 WSV-ARITMETICA.
-             10 WSV-NUM-1         PIC 9(2) VALUE ZEROS.
-             10 WSV-NUM-2         PIC 9(2) VALUE ZEROS.
+             10 WSV-NUM-1         PIC 9(10) VALUE ZEROS.
+             10 WSV-NUM-2         PIC 9(10) VALUE ZEROS.
              10 WSV-TOTAL         PIC Z(11) VALUE ZEROS.
 
        01 WSC-CONSTANTES.
@@ -45,74 +45,67 @@
       * SECCIÓN #4
        PROCEDURE DIVISION.
        010-MAIN.
-           PERFORM 015-ITERATOR UNTIL WSV-OPCION = 0.
+           PERFORM 020-ITERATOR UNTIL WSV-OPCION EQUAL 0.
+           STOP RUN.
 
-       015-ITERATOR.
-           PERFORM 020-HEADER.
-           PERFORM 030-DATOS.
-           PERFORM 040-VALIDACIONES.
+       020-ITERATOR.
+           PERFORM 030-HEADER.
+           PERFORM 040-DATOS.
+           PERFORM 050-VALIDACIONES.
 
-       020-HEADER.
+       030-HEADER.
            DISPLAY WSC-FILL.
            DISPLAY WSC-CABECERA.
            DISPLAY WSC-FILL.
 
-       030-DATOS.
+       040-DATOS.
            DISPLAY 'INGRESE LA OPCIÓN DE LA CALCULADORA:'
            DISPLAY WSC-NOMBRE-S.
            DISPLAY WSC-NOMBRE-R.
            DISPLAY WSC-NOMBRE-M.
            DISPLAY WSC-NOMBRE-D.
-           DISPLAY " 0: SALIR DEL SISTEMA.".
+           DISPLAY " 5: SALIR DEL SISTEMA.".
            DISPLAY "OPCIÓN: "
            ACCEPT WSV-OPCION.
 
-       040-VALIDACIONES.
+       050-VALIDACIONES.
            EVALUATE WSV-OPCION
                WHEN 0
-                   DISPLAY "APLICACIÓN TERMINADA"
-                   PERFORM 0100-STOP
+                   DISPLAY 'APLICACIÓN TERMINADA'
                WHEN 1
-                   DISPLAY "OPCIÓN SELECCIONADA: SUMA"
                    PERFORM 070-INGRESAR
-                   PERFORM 051-SUMA
+                   PERFORM 061-SUMA
                    CALL "C$SLEEP" USING 2 END-CALL
                WHEN 2
-                   DISPLAY "OPCIÓN SELECCIONADA: RESTA"
                    PERFORM 070-INGRESAR
-                   PERFORM 052-RESTA
+                   PERFORM 062-RESTA
                    CALL "C$SLEEP" USING 2 END-CALL
                WHEN 3
-                   DISPLAY "OPCIÓN SELECCIONADA: MULTIPLICACION"
                    PERFORM 070-INGRESAR
-                   PERFORM 053-MULTIPLICACION
+                   PERFORM 063-MULTIPLICACION
                    CALL "C$SLEEP" USING 2 END-CALL
                WHEN 4
-                   DISPLAY "OPCIÓN SELECCIONADA: DIVISION"
                    PERFORM 070-INGRESAR
-                   PERFORM 054-DIVISION
+                   PERFORM 064-DIVISION
                    CALL "C$SLEEP" USING 2 END-CALL
                WHEN OTHER
-                   PERFORM 060-ERROR-OPCION
+                   DISPLAY "OPCIÓN NO ENCONTRADA."
+                   PERFORM 080-STOP
            END-EVALUATE.
 
-       050-ARITMETICA.
-       051-SUMA.
-           ADD WSV-NUM-1 TO WSV-NUM-2 GIVING WSV-TOTAL.                 SUMAR
+       060-ARITMETICA.
+       061-SUMA.
+           ADD WSV-NUM-1 TO WSV-NUM-2 GIVING WSV-TOTAL.
            DISPLAY "RESULTADO :" WSV-TOTAL.
-       052-RESTA.
-           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL.          RESTA
+       062-RESTA.
+           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL.
            DISPLAY "RESULTADO :" WSV-TOTAL.
-       053-MULTIPLICACION.
-           MULTIPLY WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.            MULTIPLICACIÓN
+       063-MULTIPLICACION.
+           MULTIPLY WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.
            DISPLAY "RESULTADO :" WSV-TOTAL.
-       054-DIVISION.
-           DIVIDE WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.              DIVISIÓN
+       064-DIVISION.
+           DIVIDE WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL.
            DISPLAY "RESULTADO :" WSV-TOTAL.
-
-       060-ERROR-OPCION.
-           DISPLAY "OPCIÓN NO ENCONTRADA.".
-           PERFORM 0100-STOP.
 
        070-INGRESAR.
            DISPLAY 'INGRESE LOS VALORES:'.
@@ -121,6 +114,6 @@
            DISPLAY 'NÚMERO 2:'.
            ACCEPT WSV-NUM-2.
 
-       0100-STOP.
+       080-STOP.
            STOP RUN.
            END PROGRAM PRACTICE.
