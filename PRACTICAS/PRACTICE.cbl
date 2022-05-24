@@ -22,7 +22,7 @@
 
        01 WSV-VARIABLES.
           05 WSV-NOMBRE           PIC X(11) VALUE 'EDWIN PÁEZ'.
-          05 WSV-OPCION           PIC X VALUE LOW-VALUE .
+          05 WSV-OPCION           PIC X VALUE LOW-VALUE.
           05 WSV-ARITMETICA.
              10 WSV-NUM-1         PIC 9(10) VALUE ZEROS.
              10 WSV-NUM-2         PIC 9(10) VALUE ZEROS.

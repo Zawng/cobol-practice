@@ -17,7 +17,7 @@
            05 WSV-YEARS                    PIC 9(2) VALUE 3.
            05 WSV-RATE                     PIC 9V9 VALUE 0.1.
       * UTILIDADES
-           05 WSV-TOTAL                    PIC Z.9(17) VALUE ZEROS.
+           05 WSV-TOTAL                    PIC Z9(9)V9(7)
            05 WSV-HLP                      PIC ZZZ.9 VALUE ZEROS.
        PROCEDURE DIVISION.
       ******************************************************************

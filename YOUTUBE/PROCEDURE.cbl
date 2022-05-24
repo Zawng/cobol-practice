@@ -17,6 +17,7 @@
        010-MAIN.                                                           Rutinas, párrafos, secciones
            PERFORM 020-HEADER.                                             Ejecuta rutinas o ciclos
            PERFORM 0100-STOP.
+           GO TO 020-HEADER.                                               Va al párrafo y no vuelve a su posición base
 
        020-HEADER.
            DISPLAY WSC-ASTERISK.
