@@ -1,17 +1,17 @@
       ******************************************************************
-      * Author: EDWIN PÁEZ
+      * Author: EDWIN PÝEZ
       * Purpose: PRACTICE COBOL
       ******************************************************************
        IDENTIFICATION DIVISION.
        PROGRAM-ID.                BASE.
        AUTHOR.                    EDWIN-PAEZ.
-       DATE-WRITTEN.              16/05/22.
+       DATE-WRITTEN.              16-05-22.
        ENVIRONMENT DIVISION.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
 
        01 WS-VARIABLES.
-          05 WS-NOMBRE           PIC X(11) VALUE 'EDWIN PÁEZ'.
+          05 WS-NOMBRE           PIC X(11) VALUE 'EDWIN PÝEZ'.
 
        01 WS-CONSTANTES.
           05 CN-TITULO            PIC X(11) VALUE 'CALCULADORA'.

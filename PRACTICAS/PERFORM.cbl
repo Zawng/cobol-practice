@@ -12,7 +12,7 @@
        WORKING-STORAGE SECTION.
 
        01 WS-VARIABLES.
-          05 WS-NUMBER            PIC S9(10).
+          05 WS-NUMBER            PIC S(10).
 
        PROCEDURE DIVISION.
        010-MAIN.
