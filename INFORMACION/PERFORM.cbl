@@ -1,6 +1,6 @@
 
       ******************************************************************
-      * Author: EDWIN PÁEZ
+      * Author: EDWIN PAEZ
       * Purpose: PRACTICE COBOL
       ******************************************************************
        IDENTIFICATION DIVISION.
@@ -19,8 +19,8 @@
            PERFORM ITERATOR UNTIL WS-NUMBER = 0.                        Itera hasta que una variable sea igual que
            PERFORM ITERATOR VARYING WS-NUMBER FROM 10 BY -1 UNTIL       Itera definiendo un inicio y un final, modificando su flujo
            WS-NUMBER < 0.
-           PERFORM ITERATOR THRU DISPLAYS.                              Ejecuta dos párrafos
-           PERFORM ITERATOR 3 TIMES.                                    Ejecuta 3 veces el párrafo
+           PERFORM ITERATOR THRU DISPLAYS.                              Ejecuta dos parrafos
+           PERFORM ITERATOR 3 TIMES.                                    Ejecuta 3 veces el parrafo
            PERFORM 0100-STOP.
 
        ITERATOR.

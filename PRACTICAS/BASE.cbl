@@ -1,26 +1,52 @@
       ******************************************************************
-      * Author: EDWIN PÝEZ
+      * Author: EDWIN PAEZ
       * Purpose: PRACTICE COBOL
       ******************************************************************
-       IDENTIFICATION DIVISION.
+
+      *----------------------------------------------------------------*
+      *                      IDENTIFICATION DIVISION                   *
+      *----------------------------------------------------------------*
+       ID DIVISION.
        PROGRAM-ID.                BASE.
        AUTHOR.                    EDWIN-PAEZ.
+       INSTALLATION               NOVATEC.
        DATE-WRITTEN.              16-05-22.
+       DATE-COMPILED.
+       REMARKS.                   BASE DE PROYECTO COBOL.
+
+      *----------------------------------------------------------------*
+      *                        ENVIRONMENT DIVISION                    *
+      *----------------------------------------------------------------*
        ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.           NOVATEC-IBM.
+       OBJECT-COMPUTER.           NOVATEC-IBM.
+
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+
+      *----------------------------------------------------------------*
+      *                          DATA DIVISION                         *
+      *----------------------------------------------------------------*
        DATA DIVISION.
+       FILE SECTION.
+
        WORKING-STORAGE SECTION.
 
-       01 WS-VARIABLES.
-          05 WS-NOMBRE           PIC X(11) VALUE 'EDWIN PÝEZ'.
+       LINKAGE SECTION.
 
-       01 WS-CONSTANTES.
-          05 CN-TITULO            PIC X(11) VALUE 'CALCULADORA'.
-
+      *----------------------------------------------------------------*
+      *                         PROCEDURE DIVISION                     *
+      *----------------------------------------------------------------*
        PROCEDURE DIVISION.
-       010-MAIN.
-           DISPLAY WS-NOMBRE SPACE CN-TITULO.
-           PERFORM 0100-STOP.
+       1000-PRINCIPAL.
+       PERFORM 2001-HOLA
+       PERFORM 3000-FINAL.
 
-       0100-STOP.
+       2000-PROCESOS.
+       2001-HOLA.
+           DISPLAY "HOLA MUNDO".
+
+       3000-FINAL.
            STOP RUN.
            END PROGRAM BASE.

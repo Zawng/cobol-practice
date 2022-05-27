@@ -13,12 +13,13 @@
        SOURCE-COMPUTER.                 PC-NOVATEC.                        PC donde se escribió el código
        OBJECT-COMPUTER.                 PC-NOVATEC.                        PC donde se ejecutará el código
        SPECIAL-NAMES.                                                      Cambiar valores de las constantes
+       DECIMAL-POINT IS COMMA.
 
        INPUT-OUTPUT SECTION.                                            Segunda parte de la environment
        FILE-CONTROL.                                                    Sirve para especificar nombres de archivos etc
        SELECT [OPTIONAL] NOMBRE-ARCHIVO
        ASSIGN TO TIPO-DE-DISPOSITIVO.
-       ORGANIZATION IS TIPO-DE-ORGANIZACIÓN.
+       ORGANIZATION IS TIPO-DE-ORGANIZACION.
        ACCESS MODE IS MODO-ACCESO-ARCHIVO.
        RECORD KEY IS CLAVE-REGISTRO.
        ALTERNATE RECORD KEY IS CLAVES-ALTERNATIVAS-REGISTRO.

@@ -3,26 +3,31 @@
       * Date: 16-05-22
       * Purpose: Practice COBOL
       ******************************************************************
-      * Sección #1 - Obligatoria
+      * Seccion #1 - Obligatoria
        IDENTIFICATION DIVISION.
+       PROGRAM-ID. TEST.
 
-      * Sección #2
+      * Seccion #2
        ENVIRONMENT DIVISION.
 
-      * Sección #3
+      * Seccion #3
        DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       77 NUM1 PIC 9(5).
+       77 NUM2 REDEFINES NUM1 PIC X(7).                                 Convierte de numero a texto, no se puede en nivel 1, abajo de la original
 
-      * Sección 4
-       PROCEDURE DIVISION.                                              Sección de procedimientos, lógica
-       010-MAIN.                                                           Rutinas, párrafos, secciones
+      * Seccion 4
+       PROCEDURE DIVISION.                                              Seccion de procedimientos, logica
+       010-MAIN.                                                           Rutinas, parrafos, secciones
            PERFORM 020-HEADER.                                             Ejecuta rutinas o ciclos
            PERFORM 0100-STOP.
-           GO TO 020-HEADER.                                               Va al párrafo y no vuelve a su posición base
+
+           GO TO 020-HEADER.                                               Va al parrafo y no vuelve a su posicion base
 
        020-HEADER.
-           DISPLAY WSC-ASTERISK.
-           DISPLAY WSC-TITLE.
-           DISPLAY WSC-ASTERISK.
+           MOVE 5555 TO NUM1
+           DISPLAY NUM1
+           DISPLAY NUM2.
 
        0100-STOP.
            STOP RUN.

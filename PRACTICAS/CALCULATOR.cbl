@@ -1,27 +1,24 @@
-      * TODO: ¿POSIBLE MANERA DE EFECTUAR UNA OPCIÓN COMPUTADA?
+      * TODO: POSIBLE MANERA DE EFECTUAR UNA OPCION COMPUTADA?
       ******************************************************************
-      * AUTHOR: EDWIN PÁEZ
+      * AUTHOR: EDWIN PAEZ
       * DATE: 16-05-22
       * PURPOSE: PRACTICE COBOL
       ******************************************************************
-      * SECCIÓN #1 - OBLIGATORIA
+      * SECCION #1 - OBLIGATORIA
        IDENTIFICATION DIVISION.
        PROGRAM-ID.                PRACTICE.
-       AUTHOR.                    EDWIN-PAEZ.
        INSTALLATION.              YOUTUBE.
        DATE-WRITTEN.              16/05/22.
-       DATE-COMPILED.             16/05/22.
-       REMARKS.                   CALCULADORA BÁSICA.
 
-      * SECCIÓN #2
+      * SECCION #2
        ENVIRONMENT DIVISION.
 
-      * SECCIÓN #3
+      * SECCION #3
        DATA DIVISION.
        WORKING-STORAGE SECTION.
 
        01 WSV-VARIABLES.
-          05 WSV-NOMBRE           PIC X(11) VALUE 'EDWIN PÁEZ'.
+          05 WSV-NOMBRE           PIC X(11) VALUE 'EDWIN PAEZ'.
           05 WSV-OPCION           PIC X VALUE LOW-VALUE.
           05 WSV-ARITMETICA.
              10 WSV-NUM-1         PIC 9(10) VALUE ZEROS.
@@ -42,7 +39,7 @@
              10 WSC-NOMBRE-M      PIC X(19) VALUE ' 3: MULTIPLICACION '.
              10 WSC-NOMBRE-D      PIC X(13) VALUE ' 4: DIVISION '.
 
-      * SECCIÓN #4
+      * SECCION #4
        PROCEDURE DIVISION.
        010-MAIN.
            PERFORM 020-ITERATOR UNTIL WSV-OPCION EQUAL 0
@@ -60,19 +57,19 @@
            DISPLAY WSC-FILL.
 
        040-DATOS.
-           DISPLAY 'INGRESE LA OPCIÓN DE LA CALCULADORA:'
+           DISPLAY 'INGRESE LA OPCION DE LA CALCULADORA:'
            DISPLAY WSC-NOMBRE-S
            DISPLAY WSC-NOMBRE-R
            DISPLAY WSC-NOMBRE-M
            DISPLAY WSC-NOMBRE-D
            DISPLAY " 0: SALIR DEL SISTEMA."
-           DISPLAY "OPCIÓN: "
+           DISPLAY "OPCION: "
            ACCEPT WSV-OPCION.
 
        050-VALIDACIONES.
            EVALUATE WSV-OPCION
                WHEN 0
-                   DISPLAY 'APLICACIÓN TERMINADA'
+                   DISPLAY 'APLICACION TERMINADA'
                WHEN 1
                    PERFORM 070-INGRESAR
                    PERFORM 061-SUMA
@@ -90,7 +87,7 @@
                    PERFORM 064-DIVISION
                    CALL "C$SLEEP" USING 2 END-CALL
                WHEN OTHER
-                   DISPLAY "OPCIÓN NO ENCONTRADA, FINALIZANDO."
+                   DISPLAY "OPCION NO ENCONTRADA, FINALIZANDO."
                    STOP RUN
            END-EVALUATE.
 
@@ -110,7 +107,7 @@
 
        070-INGRESAR.
            DISPLAY 'INGRESE LOS VALORES:'
-           DISPLAY 'NÚMERO 1:'
+           DISPLAY 'NUMERO 1:'
            ACCEPT WSV-NUM-1
-           DISPLAY 'NÚMERO 2:'
+           DISPLAY 'NUMERO 2:'
            ACCEPT WSV-NUM-2.

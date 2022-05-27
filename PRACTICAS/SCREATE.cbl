@@ -19,7 +19,7 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
        SELECT OPTIONAL EMPLEADOS-ARCHIVO
-              ASSIGN TO "./EMPLEADOS.data"
+              ASSIGN TO "../GENERADOS/EMPLEADOS.data"
               ORGANIZATION IS LINE SEQUENTIAL.
 
       *----------------------------------------------------------------*
@@ -80,7 +80,6 @@
            ACCEPT EMPLEADOS-DIRECCION
            PERFORM 2005-CONTINUAR.
 
-
        2005-CONTINUAR.
            MOVE "S" TO ENTRADA
            IF EMPLEADOS-NOMBRE = SPACE
@@ -90,11 +89,11 @@
            WRITE EMPLEADOS-REGISTRO.
 
        2007-REINICIAR.
-           DISPLAY "Desea almacenar otro registro?"
+           DISPLAY "Desea almacenar otro registro? y/N"
            ACCEPT SI-NO
-           IF SI-NO = "s"
+           IF SI-NO = "y" OR SI-NO = "Y"
                MOVE "S" TO SI-NO.
-           IF SI-NO NOT = "S"
+           IF SI-NO NOT = "y" OR SI-NO NOT = "Y"
                MOVE "N" TO SI-NO.
 
        3000-FINAL.
