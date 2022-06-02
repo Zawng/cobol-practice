@@ -17,7 +17,7 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-      * Archivo físico en modo dinámico
+      * Archivo fï¿½sico en modo dinï¿½mico
        SELECT EMPLEADOS-ARCHIVO
        ASSIGN TO "../GENERADOS/EMPLEADOS.data"
        ORGANIZATION IS INDEXED
@@ -50,9 +50,9 @@
        PERFORM 2004-LEE-SIGUIENTE-REGISTRO
        IF LEE-TODO = "1" THEN
            DISPLAY "No se encontraron registos en el archivo"
-           ELSE
-               PERFORM 2003-MUESTRA-CAMPOS UNTIL LEE-TODO = "1"
-               PERFORM 2002-CERRAR-ARCHIVO.
+       ELSE
+           PERFORM 2003-MUESTRA-CAMPOS UNTIL LEE-TODO = "1"
+           PERFORM 2002-CERRAR-ARCHIVO.
        PERFORM 3000-FINAL.
 
        2000-PROCESOS.
