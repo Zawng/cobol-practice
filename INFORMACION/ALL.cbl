@@ -46,14 +46,14 @@
            
        INPUT-OUTPUT SECTION.                                            * Opcional    - Definición de archivos
        FILE-CONTROL.                                                    * Opcional    - Sirve para especificar nombres de archivos etc
-       SELECT [OPTIONAL] NOMBRE-ARCHIVO                                 * Opcional    -
-       ASSIGN TO TIPO-DE-DISPOSITIVO                                    * Opcional    -  
-       ORGANIZATION IS TIPO-DE-ORGANIZACION                             * Opcional    -
-       ACCESS MODE IS MODO-ACCESO-ARCHIVO                               * Opcional    -
-       RECORD KEY IS CLAVE-REGISTRO                                     * Opcional    -
-       ALTERNATE RECORD KEY IS CLAVES-ALTERNATIVAS-REGISTRO             * Opcional    -
-       WITH DUPLICATES                                                  * Opcional    -
-       STATUS IS VARIABLE-ESTADO-ARCHIVO.                               * Opcional    -
+       SELECT [OPTIONAL] NOMBRE-ARCHIVO                                 * Opcional    - Nombre lógico
+       ASSIGN TO TIPO-DE-DISPOSITIVO                                    * Opcional    - [RANDOM, DISC, INPUT, INPUT-OUTPUT, CASSETE, MAGNETIC-TAPE] tipo de dispositivo.
+       ORGANIZATION IS TIPO-DE-ORGANIZACION                             * Opcional    - [SEQUENTIAL, RELATIVE, INDEXED] por defecto, secuencial, indica la organización de los registros.
+       ACCESS MODE IS MODO-ACCESO-ARCHIVO                               * Opcional    - [SEQUENTIAL, DYNAMIC, RANDOM] modo de acceso al fichero
+       RECORD KEY IS CLAVE-REGISTRO                                     * Opcional    - [Indexados] nombre de la clave de tipo X
+       ALTERNATE RECORD KEY IS CLAVES-ALTERNATIVAS-REGISTRO             * Opcional    - [Indexados] identifican uan o más claves foráneas
+       WITH DUPLICATES                                                  * Opcional    - Existen llaves duplicadas
+       STATUS IS VARIABLE-ESTADO-ARCHIVO.                               * Opcional    - [XX] estado del archivo
 
       *----------------------------------------------------------------*
       * FICHEROS, VARIABLES DEL PROGRAMA, PARAMETROS, COMUNICACION     *
@@ -78,7 +78,7 @@
       * 1 - 77 niveles, variables & constantes 
       * 2 - 49... 88 subniveles, 88 nombres de condición
 
-       77  SW-SWITCHES.                  PIC X(03) VALUE '   '.          * Opcional   -  Booleanos
+       77  SW-SWITCHES.                  PIC X(03) VALUE '   '.          * Opcional   - Booleanos
            88 SW-SI.                               VALUE 'FIN'.         
        01  WS-VARIABLES.                                                * Opcional    - Variables
            02 WS-NAME                  PIC X(05) VALUE 'EDWIN'.         
@@ -139,7 +139,7 @@
                    STOP RUN
            END-EVALUATE.
 
-           IF LEE-TODO = "1" THEN                                       Conficionales
+           IF LEE-TODO = "1" THEN                                       Condicionales
                DISPLAY "No se encontraron registos en el archivo"
            ELSE
                PERFORM 2003-MUESTRA-CAMPOS UNTIL LEE-TODO = "1"
@@ -149,11 +149,11 @@
       *                             ARITMETICA                         *
       ****************************************************************** 
        2004-ARITMETICA.
-           ADD WSV-NUM-1 TO WSV-NUM-2 GIVING WSV-TOTAL
-           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL
-           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL
-           DIVIDE WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL
-           COMPUTE WSV-NUM1 = 1 * 2 * 3 + 4
+           ADD WSV-NUM-1 TO WSV-NUM-2 GIVING WSV-TOTAL                  Suma
+           SUBTRACT WSV-NUM-1 FROM WSV-NUM-2 GIVING WSV-TOTAL           Resta
+           MULTIPLY WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL             Multiplicación
+           DIVIDE WSV-NUM-1 BY WSV-NUM-2 GIVING WSV-TOTAL               División
+           COMPUTE WSV-NUM1 = 1 * 2 * 3 + 4                             Computada
 
        3000-FINAL.                                                      
            STOP RUN.                                                    * Detener el programa
