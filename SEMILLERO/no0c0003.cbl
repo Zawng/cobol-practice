@@ -15,44 +15,48 @@
            02 WS-FECHA                   PIC 9(6)  VALUE ZEROES.
            02 WS-HORA                    PIC 9(8)  VALUE ZEROES.
       
-      * VARIABLES DE SALIDA
-      * 
+      *----------------------------------------------------------------*
+      * FECHA Y HORA DEL SISTEMA
+      *----------------------------------------------------------------*
            02 WS-FECHA-SAL.
               03 WS-DIA-SAL              PIC 9(2) VALUE ZEROES.  
-              03 WS-SEPA-01              PIC X    VALUE '/'.
+              03 FILLER                  PIC X    VALUE '/'.
               03 WS-MES-SAL              PIC 9(2) VALUE ZEROES.  
-              03 WS-SEPA-02              PIC X    VALUE '/'.
+              03 FILLER                  PIC X    VALUE '/'.
               03 WS-SIGLO-SAL            PIC 9(2) VALUE 20.  
               03 WS-ANO-SAL              PIC 9(2) VALUE ZEROES.  
 
            02 WS-HORA-SAL.
               03 WS-HOR-SAL              PIC 9(2) VALUE ZEROES.
-              03 WS-SEP-01               PIC X VALUE ':'.
+              03 FILLER                  PIC X    VALUE ':'.
               03 WS-MIN-SAL              PIC 9(2) VALUE ZEROES.
-              03 WS-SEP-01               PIC X VALUE ':'.
+              03 FILLER                  PIC X    VALUE ':'.
               03 WS-SEG-SAL              PIC 9(2) VALUE ZEROES.
+
+       SCREEN SECTION.
+       01  CLEAR-SCREEN BLANK SCREEN.
 
        PROCEDURE DIVISION.
        INICIO.
-           DISPLAY ERASE
+           DISPLAY CLEAR-SCREEN
       * OBTENGO LAS ENTRADAS
       *    FORMATO: 220606     
-           ACCEPT WS-FECHA FROM DATE
-           MOVE WS-FECHA(5:2) TO WS-DIA-SAL
-           MOVE WS-FECHA(3:2) TO WS-MES-SAL
-           MOVE WS-FECHA(1:2) TO WS-ANO-SAL
+           ACCEPT WS-FECHA               FROM DATE
+           MOVE WS-FECHA(5:2)            TO WS-DIA-SAL
+           MOVE WS-FECHA(3:2)            TO WS-MES-SAL
+           MOVE WS-FECHA(1:2)            TO WS-ANO-SAL
 
       *    FORMATO: 09012856     
-           ACCEPT WS-HORA FROM TIME
-           MOVE WS-HORA(1:2) TO WS-HOR-SAL
-           MOVE WS-HORA(3:2) TO WS-MIN-SAL
-           MOVE WS-HORA(5:2) TO WS-SEG-SAL
+           ACCEPT WS-HORA                FROM TIME
+           MOVE WS-HORA(1:2)             TO WS-HOR-SAL
+           MOVE WS-HORA(3:2)             TO WS-MIN-SAL
+           MOVE WS-HORA(5:2)             TO WS-SEG-SAL
 
       * SOLICITAR INFORMACION DEL USUARIO
            DISPLAY 'SISTEMA DE USUARIOS' LINE 01 POSITION 30
            DISPLAY 'INGRESE SU NOMBRE: ' LINE 02 POSITION 01              
            ACCEPT WS-NOMBRE              LINE 02 POSITION 20
-           DISPLAY ERASE
+           DISPLAY CLEAR-SCREEN
        
       * MOSTRAR LA FECHA Y HORA EN PANTALLA
            DISPLAY 'FECHA DEL SISTEMA: ' LINE 02 POSITION 01

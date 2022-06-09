@@ -70,5 +70,11 @@
            MOVE WS-HORA-ACT(3:2)         TO WS-MIN-SIS
            MOVE WS-HORA-ACT(5:2)         TO WS-SEG-SIS.
 
+       2001-PANTALLA-FECHAS.
+           DISPLAY 'FECHA DEL SISTEMA: '   LINE 01 POSITION 01
+           DISPLAY WS-FECHA                LINE 01 POSITION 20          10
+           DISPLAY 'HORA DEL SISTEMA: '    LINE 01 POSITION 54
+           DISPLAY WS-HORA                 LINE 01 POSITION 72.         08
+
        3000-FINAL.
            STOP RUN.
