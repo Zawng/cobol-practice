@@ -1,13 +1,13 @@
       ******************************************************************
       * Author: EDWIN PAEZ                                             *
       * Purpose: PRACTICE COBOL                                        *
-      * ENTRADA:                                                          *
+      * ENTRADA:                                                       *
       * [X] CAPTURAR UN NOMBRE X(30)
       * [X] CAPTURAR FECHA NACIMIENTO 20-05-1925 DIA/MES/ANO
       * SALIDA:
       * [X] NOMBRE DIVIDIRLO EN 4 VARIABLES 
       * [X] CAMBIAR VOCALES POR NUMEROS
-      * [X] MOSTRAR LOS DIAS EN SEPARADO
+      * [X] MOSTRAR LOS FECHAS POR SEPARADO
       ******************************************************************
 
       ******************************************************************
@@ -35,10 +35,10 @@
       ******************************************************************
            02 WS-NOMBRE                    PIC X(30) VALUE SPACES.
            02 WS-INFORMACION.
-              03 WS-PRIMER-NOM             PIC X(08) VALUE SPACES.
-              03 WS-SEGUNDO-NOM            PIC X(08) VALUE SPACES.
-              03 WS-PRIMER-APE             PIC X(08) VALUE SPACES.
-              03 WS-SEGUNDO-APE            PIC X(08) VALUE SPACES.
+              03 WS-PRIMER-NOM             PIC X(15) VALUE SPACES.
+              03 WS-SEGUNDO-NOM            PIC X(15) VALUE SPACES.
+              03 WS-PRIMER-APE             PIC X(15) VALUE SPACES.
+              03 WS-SEGUNDO-APE            PIC X(15) VALUE SPACES.
 
            02 WS-ENTER                     PIC X(01) VALUE SPACES.
            02 WS-FECHA-NACI                PIC X(10) VALUE SPACES.
@@ -139,6 +139,16 @@
            DISPLAY WS-PRIMER-APE           LINE 05 POSITION 19
            DISPLAY 'SEGUNDO APELLIDO: '    LINE 06 POSITION 01          17
            DISPLAY WS-SEGUNDO-APE          LINE 06 POSITION 19
+           INSPECT WS-PRIMER-NOM CONVERTING "AEIOUaeiou" TO "1234512345"
+           DISPLAY WS-PRIMER-NOM           LINE 03 POSITION 50
+           INSPECT WS-SEGUNDO-NOM CONVERTING 
+                                  "AEIOUaeiou" TO "1234512345"
+           DISPLAY WS-SEGUNDO-NOM          LINE 04 POSITION 50
+           INSPECT WS-PRIMER-APE CONVERTING "AEIOUaeiou" TO "1234512345"
+           DISPLAY WS-PRIMER-APE           LINE 05 POSITION 50
+           INSPECT WS-SEGUNDO-APE CONVERTING 
+                                  "AEIOUaeiou" TO "1234512345"
+           DISPLAY WS-SEGUNDO-APE          LINE 06 POSITION 50
            DISPLAY 'DIA NACIMIENTO: '      LINE 07 POSITION 01
            DISPLAY WS-DIA-NAC              LINE 07 POSITION 19
            DISPLAY 'MES NACIMIENTO: '      LINE 08 POSITION 01
