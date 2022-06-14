@@ -4,19 +4,10 @@
       * Purpose: PRACTICE COBOL                                        *
       * TODO:                                                          *
       * ENTRADA:
-      * [ ] RECIBIR DOS NUMEROS
-      *     DIGITE UN NUMERO POSITIVO (12ENT).(2DEC)
-      *     DIGITE UN NUMERO NEGATIVO (12ENT).(2DEC)
+      * [ ] RECIBIR 5 NUMEROS de 5 DIG
+      * SUMA NUMEROS PARES:
+      * SUMA NUMEROS IMPARES:
       * SALIDA:
-      * [ ] NUMERO POSITIVO: MOSTRAR NUMERO TAL CUAL
-      * [ ] NUMERO NEGATIVO: MOSTRAR NUMERO TAL CUAL
-      * [ ] 1) MÁSCARA
-      * [ ] 2) MÁSCARA
-      * [ ] 3) MÁSCARA
-      * [ ] 4) MÁSCARA
-      * [ ] 5) MÁSCARA
-      * [ ] 6) MÁSCARA
-      * [ ] 7) MÁSCARA SIGNOS
       ******************************************************************
 
       *----------------------------------------------------------------*

@@ -37,7 +37,7 @@
               03 WS-MES-SIS                    PIC 9(02) VALUE ZEROES.
               03 FILLER                        PIC X(01) VALUE '/'.
               03 WS-SIG-SIS                    PIC 9(02) VALUE 20.
-              03 WS-ANO-SIS                    PIC 9(04) VALUE ZEROES.
+              03 WS-ANO-SIS                    PIC 9(02) VALUE ZEROES.
 
            02 WS-HORA-SIS.
               03 WS-HOR-SIS                    PIC 9(02) VALUE ZEROES.
