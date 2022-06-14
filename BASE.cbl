@@ -55,6 +55,7 @@
        PROCEDURE DIVISION.
        1000-PRINCIPAL.
        PERFORM 2001-FECHAS
+       PERFORM 2002-PANTALLA-FECHAS
        PERFORM 3000-FINAL.
 
       *----------------------------------------------------------------*
@@ -70,11 +71,11 @@
            MOVE WS-HORA-ACT(3:2)         TO WS-MIN-SIS
            MOVE WS-HORA-ACT(5:2)         TO WS-SEG-SIS.
 
-       2001-PANTALLA-FECHAS.
-           DISPLAY 'FECHA DEL SISTEMA: '   LINE 01 POSITION 01
-           DISPLAY WS-FECHA                LINE 01 POSITION 20          10
-           DISPLAY 'HORA DEL SISTEMA: '    LINE 01 POSITION 54
-           DISPLAY WS-HORA                 LINE 01 POSITION 72.         08
+       2002-PANTALLA-FECHAS.
+           DISPLAY 'FEC SIS: '             LINE 01 POSITION 01
+           DISPLAY WS-FECHA-SIS            LINE 01 POSITION 10          
+           DISPLAY 'HORA SIS: '            LINE 01 POSITION 62
+           DISPLAY WS-HORA-SIS             LINE 01 POSITION 72.         
 
        3000-FINAL.
            STOP RUN.
