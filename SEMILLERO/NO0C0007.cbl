@@ -23,10 +23,11 @@
       *----------------------------------------------------------------*
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+       01  WS-NUM-01  PIC 9(10)V9(2)  VALUE ZERO.
+       01  WS-NUM-02  PIC S9(10)V9(2) VALUE ZERO.
+
        01  WS-VARIABLES.
            02 WS-ENTER   PIC X(01)       VALUE SPACES.
-           02 WS-NUM-01  PIC 9(10)V9(2)  VALUE ZEROES.
-           02 WS-NUM-02  PIC S9(10)V9(2) VALUE ZEROES.
       *----------------------------------------------------------------*
       * MASCARAS POSITIVOS
       *----------------------------------------------------------------*
@@ -112,6 +113,8 @@
            DISPLAY 'NUMERO NEGATIVO: '
                                                LINE 06 POSITION 01
            ACCEPT WS-NUM-02                    LINE 06 POSITION 18
+           COMPUTE WS-NUM-01 = WS-NUM-01 / 100
+           COMPUTE WS-NUM-02 = WS-NUM-02 / 100
            COMPUTE WS-NUM-02 = WS-NUM-02 * -1.
 
        2003-MASCARAS-POSITIVAS.

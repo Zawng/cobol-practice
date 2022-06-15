@@ -6,8 +6,8 @@
       * ENTRADA:
       * [X] RECIBIR 5 NUMEROS DE 5 DIG
       * SALIDA:
-      * [ ] SUMA NUMEROS PARES:
-      * [ ] SUMA NUMEROS IMPARES:
+      * [X] SUMA NUMEROS PARES:
+      * [X] SUMA NUMEROS IMPARES:
       ******************************************************************
 
       *----------------------------------------------------------------*
@@ -31,7 +31,6 @@
        WORKING-STORAGE SECTION.
        01  WS-VARIABLES.
            02 WS-ENTER                           PIC X(01) VALUE SPACES.
-
 
            02 WS-NUMEROS.
              03 WS-NUM-01                        PIC 9(05).
@@ -117,13 +116,15 @@
 
        2004-PROCESOS.
       * PARES 
-           ADD WS-NUM-02 WS-NUM-04              GIVING WS-TOT-01  
+           ADD WS-NUM-02 WS-NUM-04              GIVING WS-TOT-01 
+           END-ADD 
            MOVE WS-TOT-01                       TO WS-MP-01
            DISPLAY 'SUMA DE LOS NUMEROS PARES: ' 
                                                 LINE 07 POSITION 01
            DISPLAY WS-MP-01                     LINE 07 POSITION 29
       * IMPARES     
-           ADD WS-NUM-01 WS-NUM-03 WS-NUM-05    TO WS-TOT-02
+           ADD WS-NUM-01 WS-NUM-03 WS-NUM-05    GIVING WS-TOT-02
+           END-ADD
            MOVE WS-TOT-02                       TO WS-MP-01
            DISPLAY 'SUMA DE LOS NUMEROS IMPARES: ' 
                                                 LINE 07 POSITION 40
