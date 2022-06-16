@@ -29,17 +29,17 @@
       *----------------------------------------------------------------*
        DATA DIVISION.
        WORKING-STORAGE SECTION.
-       01  WS-VARIABLES.
-           02 WS-ENTER                           PIC X(01) VALUE SPACES.
+       01  WS-VARIABLES. 
+           02 WS-ENTER                         PIC X(01) VALUE SPACES.
 
            02 WS-NUMEROS.
-             03 WS-NUM-01                        PIC 9(05).
-             03 WS-NUM-02                        PIC 9(05).
-             03 WS-NUM-03                        PIC 9(05).
-             03 WS-NUM-04                        PIC 9(05).
-             03 WS-NUM-05                        PIC 9(05).
-             03 WS-TOT-01                        PIC 9(06).
-             03 WS-TOT-02                        PIC 9(06).
+             03 WS-NUM-01                      PIC 9(05).
+             03 WS-NUM-02                      PIC 9(05).
+             03 WS-NUM-03                      PIC 9(05).
+             03 WS-NUM-04                      PIC 9(05).
+             03 WS-NUM-05                      PIC 9(05).
+             03 WS-TOT-01                      PIC 9(06).
+             03 WS-TOT-02                      PIC 9(06).
 
       *----------------------------------------------------------------*
       * MASCARAS
@@ -94,46 +94,46 @@
            MOVE WS-HORA-ACT(5:2)               TO WS-SEG-SIS.
 
        2002-PANTALLA-FECHAS.
-           DISPLAY 'FEC SIS: '                  LINE 01 POSITION 01
-           DISPLAY WS-FECHA-SIS                 LINE 01 POSITION 10          
-           DISPLAY 'HORA SIS: '                 LINE 01 POSITION 62
-           DISPLAY WS-HORA-SIS                  LINE 01 POSITION 72.         
+           DISPLAY 'FEC SIS: '                 LINE 01 POSITION 01
+           DISPLAY WS-FECHA-SIS                LINE 01 POSITION 10          
+           DISPLAY 'HORA SIS: '                LINE 01 POSITION 62
+           DISPLAY WS-HORA-SIS                 LINE 01 POSITION 72.         
 
        2003-INFORMACION.
            INITIALIZE WS-NUMEROS
            DISPLAY 'DIGITE CINCO NUMEROS DE CINCO DIGITOS: '
-                                                LINE 03 POSITION 20.
-           DISPLAY '1) '                        LINE 05 POSITION 01
-           ACCEPT  WS-NUM-01                    LINE 05 POSITION 04
-           DISPLAY '2) '                        LINE 05 POSITION 10
-           ACCEPT  WS-NUM-02                    LINE 05 POSITION 13
-           DISPLAY '3) '                        LINE 05 POSITION 20
-           ACCEPT  WS-NUM-03                    LINE 05 POSITION 23
-           DISPLAY '4) '                        LINE 05 POSITION 30
-           ACCEPT  WS-NUM-04                    LINE 05 POSITION 33
-           DISPLAY '5) '                        LINE 05 POSITION 40
-           ACCEPT  WS-NUM-05                    LINE 05 POSITION 43.
+                                               LINE 03 POSITION 20.
+           DISPLAY '1) '                       LINE 05 POSITION 01
+           ACCEPT  WS-NUM-01                   LINE 05 POSITION 04
+           DISPLAY '2) '                       LINE 05 POSITION 10
+           ACCEPT  WS-NUM-02                   LINE 05 POSITION 13
+           DISPLAY '3) '                       LINE 05 POSITION 20
+           ACCEPT  WS-NUM-03                   LINE 05 POSITION 23
+           DISPLAY '4) '                       LINE 05 POSITION 30
+           ACCEPT  WS-NUM-04                   LINE 05 POSITION 33
+           DISPLAY '5) '                       LINE 05 POSITION 40
+           ACCEPT  WS-NUM-05                   LINE 05 POSITION 43.
 
        2004-PROCESOS.
       * PARES 
-           ADD WS-NUM-02 WS-NUM-04              GIVING WS-TOT-01 
+           ADD WS-NUM-02 WS-NUM-04             GIVING WS-TOT-01 
            END-ADD 
-           MOVE WS-TOT-01                       TO WS-MP-01
+           MOVE WS-TOT-01                      TO WS-MP-01
            DISPLAY 'SUMA DE LOS NUMEROS PARES: ' 
-                                                LINE 07 POSITION 01
-           DISPLAY WS-MP-01                     LINE 07 POSITION 29
+                                               LINE 07 POSITION 01
+           DISPLAY WS-MP-01                    LINE 07 POSITION 29
       * IMPARES     
-           ADD WS-NUM-01 WS-NUM-03 WS-NUM-05    GIVING WS-TOT-02
+           ADD WS-NUM-01 WS-NUM-03 WS-NUM-05   GIVING WS-TOT-02
            END-ADD
-           MOVE WS-TOT-02                       TO WS-MP-01
+           MOVE WS-TOT-02                      TO WS-MP-01
            DISPLAY 'SUMA DE LOS NUMEROS IMPARES: ' 
-                                                LINE 07 POSITION 40
-           DISPLAY WS-MP-01                     LINE 07 POSITION 71
+                                               LINE 07 POSITION 40
+           DISPLAY WS-MP-01                    LINE 07 POSITION 71
            PERFORM 2005-SALIR.
 
        2005-SALIR.
-           DISPLAY '<OPRIMA ENTER>'        LINE 24 POSITION 33          14
-           ACCEPT WS-ENTER                 LINE 24 POSITION 48.
+           DISPLAY '<OPRIMA ENTER>'            LINE 24 POSITION 33      
+           ACCEPT WS-ENTER                     LINE 24 POSITION 48.
 
        3000-FINAL.
            STOP RUN.
