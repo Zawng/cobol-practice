@@ -38,7 +38,7 @@
              03 WS-TOT-MU                      PIC S9(10).
              03 WS-TOT-DI                      PIC S9(06)V9(02).
              03 WS-TOT-CO                      PIC S9(06)V9(02).
-             03 WS-RES                         PIC S9(06)v9(02).
+             03 WS-RES                         PIC S9(06)V9(02).
 
       * GENERAR ERROR 
           *>  02 WS-NUMEROS.
