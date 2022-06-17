@@ -40,13 +40,13 @@
       * T: Tiempo en meses
       *----------------------------------------------------------------*
            02 WS-SIMPLE.
-              03 WS-TOTS                  PIC 9(15)V9(02).
-              03 WS-IS-C                  PIC 9(15)V9(02).
-              03 WS-IS-I                  PIC 9(02).
-              03 WS-IS-TI                 PIC 9(15)V9(02).
-              03 WS-IS-T                  PIC 9(02).
-              03 WS-MAS-ST                PIC $(15).9(02).
-              03 WS-MAS-SI                PIC $(15).9(02).
+              03 WS-TOTS                 PIC 9(15)V9(02).
+              03 WS-IS-C                 PIC 9(15)V9(02).
+              03 WS-IS-I                 PIC 9(03)V9(04).
+              03 WS-IS-TI                PIC 9(15)V9(02).
+              03 WS-IS-T                 PIC 9(02).
+              03 WS-MAS-ST               PIC $$$$,$$$,$$$,$$$,$$$.9(02).
+              03 WS-MAS-SI               PIC $$$$,$$$,$$$,$$$,$$$.9(02).
 
       *----------------------------------------------------------------*
       * INTERES COMPUESTO
@@ -58,10 +58,11 @@
            02 WS-COMPUESTO.
               03 WS-TOTC                 PIC 9(15)V9(02).
               03 WS-IC-C                 PIC 9(15)V9(02).
-              03 WS-IC-I                 PIC 9(01)V9(02).
+              03 WS-IC-I                 PIC 9(03)V9(02).
               03 WS-IC-T                 PIC 9(02).
               03 WS-MAS-CT               PIC $(15).9(02).
               03 WS-MAS-CI               PIC $(15).9(02).
+
       *----------------------------------------------------------------*
       * FECHA Y HORA DEL SISTEMA
       *----------------------------------------------------------------*
@@ -125,6 +126,8 @@
            ACCEPT WS-IS-I                LINE 04 POSITION 18
            DISPLAY 'TIEMPO EN MESES: '   LINE 05 POSITION 01
            ACCEPT WS-IS-T                LINE 05 POSITION 18
+           DIVIDE 100 INTO WS-IS-C END-DIVIDE
+           DIVIDE 100 INTO WS-IS-I END-DIVIDE
       * Hallar el interés
            COMPUTE WS-IS-TI = (WS-IS-C * WS-IS-I / 100) * WS-IS-T
                ON SIZE ERROR
