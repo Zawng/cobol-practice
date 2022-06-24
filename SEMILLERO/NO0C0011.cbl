@@ -25,7 +25,7 @@
       *                           IDENTIFICATION                       *
       *----------------------------------------------------------------*
        ID DIVISION.
-       PROGRAM-ID.                       O0C0004.
+       PROGRAM-ID.                       NO0C0011.
        AUTHOR.                           NOVATEC (EDWIN-PAEZ).
        INSTALLATION.                     BBVA.
        DATE-WRITTEN.                     23-JUN-22.
@@ -41,57 +41,7 @@
        DATA DIVISION.
        WORKING-STORAGE SECTION.
       *----------------------------------------------------------------*
-      * PRODUCTOS
-      *----------------------------------------------------------------*
-       01  WS-CAPITAL                 PIC 9(15)V99 VALUE ZEROS.
-      * MASCARA CAPITAL 
-       01  WS-MAS-CAP                 PIC $(14)9.99.
-
-       01  WS-PRODUCTO                PIC 9     VALUE ZEROS.
-       01  WS-PRODUCTO-SELECCIONADO   PIC X(24).
-           88 WS-PRE-TDC              VALUE 'TARJETA DE CREDITO'.
-           88 WS-PRE-HIP              VALUE 'PRESTAMO HIPOTECARIO'.
-           88 WS-PRE-VEH              VALUE 'PRESTAMO VEHICULO'.
-           88 WS-PRE-INV              VALUE 'PRESTAMO LIBRE INVERSION'.
-           88 WS-PRE-EDU              VALUE 'PRESTAMO EDUCACION'.
-
-      *----------------------------------------------------------------*
-      * INTERESES
-      *----------------------------------------------------------------*
-       01  WS-SEGURO                 PIC 99V9   VALUE 01.5.
-       01  WS-INTERES                 PIC 99.9  VALUE ZEROS.
-           88 WS-INT-TDC              VALUE 30.0.
-           88 WS-INT-HIP              VALUE 16.0.
-           88 WS-INT-VEH              VALUE 18.0.
-           88 WS-INT-INV              VALUE 24.0.
-           88 WS-INT-EDU              VALUE 19.0.
-
-
-      *----------------------------------------------------------------*
-      * MAXIMO AÑOS
-      *----------------------------------------------------------------*
-       01  WS-ANO                     PIC 99    VALUE ZEROS.
-           88 WS-ANO-TDC              VALUE 05.
-           88 WS-ANO-HIP              VALUE 20.
-           88 WS-ANO-VEH              VALUE 06.
-           88 WS-ANO-INV              VALUE 05.
-           88 WS-ANO-EDU              VALUE 07.
-
-      *----------------------------------------------------------------*
-      * TIPO PERSONA
-      *----------------------------------------------------------------*
-       01  WS-GENERO                  PIC A     VALUE SPACES.
-       01  WS-GENERO-SELECCIONADO     PIC A     VALUE SPACES.
-           88 WS-PER-HOM              VALUE 'HOMBRE'.
-           88 WS-PER-MUJ              VALUE 'MUJER'.
-
-       01  WS-CABEZA-HOGAR            PIC A     VALUE SPACES.
-       01  WS-HOGAR                   PIC A(02) VALUE SPACES.
-           88 WS-HOG-SI               VALUE 'SI'.
-           88 WS-HOG-NO               VALUE 'NO'.
-
-      *----------------------------------------------------------------*
-      * BANNER
+      * TITULO PANTALLA
       *----------------------------------------------------------------*
        01  WS-ASTERISCOS              PIC X(80) VALUE ALL '*'.
        01  WS-BANNER.
@@ -101,29 +51,78 @@
            02 FILLER                  PIC X(15) VALUE ALL '-'.
 
       *----------------------------------------------------------------*
-      * UTILIDADES
-      *----------------------------------------------------------------*
-       01  WS-OPCION                 PIC A VALUE SPACES.
-
-      *----------------------------------------------------------------*
       * FECHA Y HORA DEL SISTEMA
       *----------------------------------------------------------------*
-       01 WS-FECHA-ACT               PIC 9(06) VALUE ZEROES.
-       01 WS-HORA-ACT                PIC 9(08) VALUE ZEROES.
-       01 WS-FECHA-SIS.
-          02 WS-DIA-SIS              PIC 9(02) VALUE ZEROES.
-          02 FILLER                  PIC X(01) VALUE '/'.
-          02 WS-MES-SIS              PIC 9(02) VALUE ZEROES.
-          02 FILLER                  PIC X(01) VALUE '/'.
-          02 WS-SIG-SIS              PIC 9(02) VALUE 20.
-          02 WS-ANO-SIS              PIC 9(02) VALUE ZEROES.
+       01  WS-FECHA-ACT               PIC 9(06) VALUE ZEROS.
+       01  WS-HORA-ACT                PIC 9(08) VALUE ZEROS.
+       01  WS-FECHA-SIS.
+           02 WS-DIA-SIS              PIC 9(02) VALUE ZEROS.
+           02 FILLER                  PIC X(01) VALUE '/'.
+           02 WS-MES-SIS              PIC 9(02) VALUE ZEROS.
+           02 FILLER                  PIC X(01) VALUE '/'.
+           02 WS-SIG-SIS              PIC 9(02) VALUE 20.
+           02 WS-ANO-SIS              PIC 9(02) VALUE ZEROS.
 
-       01 WS-HORA-SIS.
-          02 WS-HOR-SIS              PIC 9(02) VALUE ZEROES.
-          02 FILLER                  PIC X(01) VALUE ':'.
-          02 WS-MIN-SIS              PIC 9(02) VALUE ZEROES.
-          02 FILLER                  PIC X(01) VALUE ':'.
-          02 WS-SEG-SIS              PIC 9(02) VALUE ZEROES.
+       01  WS-HORA-SIS.
+           02 WS-HOR-SIS              PIC 9(02) VALUE ZEROS.
+           02 FILLER                  PIC X(01) VALUE ':'.
+           02 WS-MIN-SIS              PIC 9(02) VALUE ZEROS.
+           02 FILLER                  PIC X(01) VALUE ':'.
+           02 WS-SEG-SIS              PIC 9(02) VALUE ZEROS.
+
+      *----------------------------------------------------------------*
+      * UTILIDADES
+      *----------------------------------------------------------------*
+       01  WS-OPCION                 PIC A(01) VALUE SPACES.
+
+      *----------------------------------------------------------------*
+      * INTERESES
+      *----------------------------------------------------------------*
+       01  WS-SEGURO                  PIC 9(02)V9(01) VALUE 1.5.
+       01  WS-MAS-SEG                 PIC 9(01).9(01).
+
+       01  WS-INTERES                 PIC 9(02).9(01) VALUE ZEROS.
+      * HOMBRE O MUJER NO CABEZA DE HOGAR 
+           88 WS-INT-TDC              VALUE 30.0.
+           88 WS-INT-HIP              VALUE 16.0.
+           88 WS-INT-VEH              VALUE 18.0.
+           88 WS-INT-INV              VALUE 24.0.
+           88 WS-INT-EDU              VALUE 19.0.
+
+      * HOMBRE CABEZA DE HOGAR
+           88 WS-HOM-TDC              VALUE 28.5.
+           88 WS-HOM-HIP              VALUE 14.5.
+           88 WS-HOM-VEH              VALUE 16.5.
+           88 WS-HOM-INV              VALUE 22.5.
+           88 WS-HOM-EDU              VALUE 17.5.
+
+      * MUJER CABEZA DE HOGAR
+           88 WS-MUJ-TDC              VALUE 28.0.
+           88 WS-MUJ-HIP              VALUE 14.0.
+           88 WS-MUJ-VEH              VALUE 16.0.
+           88 WS-MUJ-INV              VALUE 22.0.
+           88 WS-MUJ-EDU              VALUE 17.0.
+
+      *----------------------------------------------------------------*
+      * PRODUCTOS
+      *----------------------------------------------------------------*
+       01  WS-CAPITAL                 PIC 9(15)V9(02) VALUE ZEROS.
+       01  WS-MAS-CAP                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
+
+       01  WS-ANO-TOT                 PIC 9(02) VALUE ZEROS.
+
+       01  WS-PRODUCTO                PIC 9(01) VALUE ZEROS.
+       01  WS-PRO-SEL                 PIC X(24) VALUE SPACES.
+           88 WS-PRO-TDC              VALUE 'TARJETA DE CREDITO'.
+           88 WS-PRO-HIP              VALUE 'PRESTAMO HIPOTECARIO'.
+           88 WS-PRO-VEH              VALUE 'PRESTAMO VEHICULO'.
+           88 WS-PRO-INV              VALUE 'PRESTAMO LIBRE INVERSION'.
+           88 WS-PRO-EDU              VALUE 'PRESTAMO EDUCACION'.
+
+       01  WS-GENERO                  PIC A(01) VALUE SPACES.
+       01  WS-GEN-SEL                 PIC A(06) VALUE SPACES.
+
+       01  WS-HOGAR                   PIC A(02) VALUE SPACES.
        
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -134,10 +133,11 @@
        PROCEDURE DIVISION.
        1000-PRINCIPAL.
        PERFORM 2001-FECHAS
-       PERFORM 2002-PANTALLA-FECHAS
        PERFORM 2004-INFORMACION
-       PERFORM 2007-PROCESOS
-       PERFORM 2008-SALIDAS
+       PERFORM 2006-HALLAR-GENERO
+      *>  PERFORM 2007-HALLAR-PRODUCTO
+      *>  PERFORM 2008-HALLAR-HOGAR
+      *>  PERFORM 2005-SALIDA
        PERFORM 3000-FINAL.
 
       *----------------------------------------------------------------*
@@ -165,82 +165,236 @@
            DISPLAY WS-ASTERISCOS         LINE 05 POSITION 01.
 
        2004-INFORMACION.
+           PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
+      * CAPITAL
            DISPLAY 'INGRESE EL CAPITAL:' LINE 07 POSITION 01
            ACCEPT WS-CAPITAL             LINE 07 POSITION 21
-           PERFORM 2005-PRODUCTOS.
-
-       2005-PRODUCTOS.
+           DIVIDE 100 INTO WS-CAPITAL    END-DIVIDE
+           MOVE WS-CAPITAL               TO WS-MAS-CAP
+      * TIEMPO EN AÑOS
+           DISPLAY 'TIEMPO EN ANOS:'     LINE 09 POSITION 01
+           ACCEPT WS-ANO-TOT             LINE 09 POSITION 21
+      * TIPO DE PRODUCTO     
            DISPLAY 'SELECCIONE UN PRODUCTO:'
-                                         LINE 09 POSITION 01
-           DISPLAY '1) TARJETA DE CREDITO       - 30%, 05 ANOS'
-                                         LINE 10 POSITION 01
-           DISPLAY '2) PRESTAMO HIPOTECARIO     - 16%, 20 ANOS'
                                          LINE 11 POSITION 01
-           DISPLAY '3) PRESTAMO DE VEHICULO     - 18%, 06 ANOS'
+           DISPLAY '1) TARJETA DE CREDITO       - 30%, 05 ANOS'
                                          LINE 12 POSITION 01
-           DISPLAY '4) PRESTAMO LIBRE INVERSION - 24%, 05 ANOS'
+           DISPLAY '2) PRESTAMO HIPOTECARIO     - 16%, 20 ANOS'
                                          LINE 13 POSITION 01
-           DISPLAY '5) PRESTAMO PARA EDUCACION  - 19%, 07 ANOS'
+           DISPLAY '3) PRESTAMO DE VEHICULO     - 18%, 06 ANOS'
                                          LINE 14 POSITION 01
-           DISPLAY 'OPCION) '            LINE 15 POSITION 01
-           ACCEPT WS-PRODUCTO            LINE 15 POSITION 09
+           DISPLAY '4) PRESTAMO LIBRE INVERSION - 24%, 05 ANOS'
+                                         LINE 15 POSITION 01
+           DISPLAY '5) PRESTAMO PARA EDUCACION  - 19%, 07 ANOS'
+                                         LINE 16 POSITION 01
+           DISPLAY 'OPCION) '            LINE 17 POSITION 01
+           ACCEPT WS-PRODUCTO            LINE 17 POSITION 09
+      * GENERO DEL USUARIO     
            DISPLAY 'SELECCIONE SU GENERO:'
-                                         LINE 17 POSITION 01
-           DISPLAY 'H/h) HOMBRE:'        LINE 18 POSITION 01
-           DISPLAY 'M/M) MUJER:'         LINE 19 POSITION 01
-           DISPLAY 'OPCION) '            LINE 20 POSITION 01
-           ACCEPT WS-GENERO              LINE 20 POSITION 09
-           DISPLAY 'CABEZA DE HOGAR?: ' LINE 22 POSITION 01
-           DISPLAY 'S-s) SI / N-n) NO'   LINE 23 POSITION 01
+                                         LINE 19 POSITION 01
+           DISPLAY 'H/h) HOMBRE - M/m) MUJER' 
+                                         LINE 20 POSITION 01
+           DISPLAY 'OPCION) '            LINE 21 POSITION 01
+           ACCEPT WS-GENERO              LINE 21 POSITION 09.
+      * CABEZA DE HOGAR
+           DISPLAY 'CABEZA DE HOGAR? S-s) SI / N-n) NO: ' 
+                                         LINE 23 POSITION 01
            DISPLAY 'OPCION) '            LINE 24 POSITION 01
-           ACCEPT WS-CABEZA-HOGAR        LINE 24 POSITION 09
-           DISPLAY CLEAR-SCREEN.
+           ACCEPT WS-HOGAR               LINE 24 POSITION 09.
 
-       2006-VALIDACIONES-PRODUCTOS.
-          *>  IF WS-GENERO-SELECCIONADO = WS-PER-HOM
-          *>     SET WS-PER-HOM TO TRUE           
+       2006-HALLAR-GENERO.
+           DISPLAY CLEAR-SCREEN
+           IF WS-GENERO = 'H' OR 'h' THEN
+               MOVE 'HOMBRE' TO WS-GEN-SEL
+               IF WS-HOGAR = 'S' OR 's' THEN
+                  DISPLAY 'HOMBRE CABEZA DE HOGAR' LINE 03 POSITION 01
+                  IF WS-PRODUCTO = 1 THEN
+                      SET WS-HOM-TDC TO TRUE
+                      DISPLAY WS-INTERES LINE 04 POSITION 01
+                  ELSE
+                      IF WS-PRODUCTO = 2 THEN
+                          SET WS-HOM-HIP TO TRUE
+                      ELSE
+                          IF WS-PRODUCTO = 3 THEN
+                               SET WS-HOM-VEH TO TRUE
+                          ELSE
+                               IF WS-PRODUCTO = 4 THEN
+                                   SET WS-HOM-INV TO TRUE
+                               ELSE 
+                                   IF WS-PRODUCTO = 5 THEN 
+                                       SET WS-HOM-EDU TO TRUE
+                                   ELSE
+                                       PERFORM 2009-OPCION-NO-ENCONTRADA
+                                   END-IF
+                               END-IF
+                          END-IF
+                      END-IF
+                  END-IF
+
+               ELSE
+                  IF WS-HOGAR = 'N' OR 'n' THEN
+                    DISPLAY 'HOMBRE INDEPENDIENTE' LINE 03 POSITION 01
+
+                      IF WS-PRODUCTO = 1 THEN
+                          SET WS-INT-TDC TO TRUE
+                          DISPLAY WS-INTERES LINE 04 POSITION 01
+                      ELSE
+                          IF WS-PRODUCTO = 2 THEN
+                              SET WS-INT-HIP TO TRUE
+                          ELSE
+                              IF WS-PRODUCTO = 3 THEN
+                                   SET WS-INT-VEH TO TRUE
+                              ELSE
+                                   IF WS-PRODUCTO = 4 THEN
+                                       SET WS-INT-INV TO TRUE
+                                   ELSE 
+                                       IF WS-PRODUCTO = 5 THEN 
+                                           SET WS-INT-EDU TO TRUE
+                                       ELSE
+                                           PERFORM 
+                                           2009-OPCION-NO-ENCONTRADA
+                                       END-IF
+                                   END-IF
+                              END-IF
+                          END-IF
+                      END-IF
 
 
-           IF WS-PRODUCTO <= 0 OR > 5 THEN
-               PERFORM 2009-OPCION-NO-ENCONTRADA
+                  END-IF
+               END-IF
            ELSE
-               IF WS-PRODUCTO = 1 THEN
-                   SET WS-PRE-TDC TO TRUE
-               END-IF
-               IF WS-PRODUCTO = 2 THEN
-                   SET WS-PRE-HIP TO TRUE
-               END-IF
-               IF WS-PRODUCTO = 3 THEN
-                   SET WS-PRE-VEH TO TRUE
-               END-IF
-               IF WS-PRODUCTO = 4 THEN
-                   SET WS-PRE-INV TO TRUE
-               END-IF
-               IF WS-PRODUCTO = 5 THEN
-                   SET WS-PRE-EDU TO TRUE
+               IF WS-GENERO = 'M' OR 'm'
+                   MOVE 'MUJER' TO WS-GEN-SEL
+                   IF WS-HOGAR = 'S' OR 's' THEN
+                       DISPLAY 'MUJER CABEZA DE HOGAR' 
+                       LINE 04 POSITION 01
+                      IF WS-PRODUCTO = 1 THEN
+                          SET WS-MUJ-TDC TO TRUE
+                          DISPLAY WS-INTERES LINE 04 POSITION 01
+                      ELSE
+                          IF WS-PRODUCTO = 2 THEN
+                              SET WS-MUJ-HIP TO TRUE
+                          ELSE
+                              IF WS-PRODUCTO = 3 THEN
+                                   SET WS-MUJ-VEH TO TRUE
+                              ELSE
+                                   IF WS-PRODUCTO = 4 THEN
+                                       SET WS-MUJ-INV TO TRUE
+                                   ELSE 
+                                       IF WS-PRODUCTO = 5 THEN 
+                                           SET WS-MUJ-EDU TO TRUE
+                                       ELSE
+                                           PERFORM 
+                                           2009-OPCION-NO-ENCONTRADA
+                                       END-IF
+                                   END-IF
+                              END-IF
+                          END-IF
+                      END-IF
+
+
+                   ELSE
+                       IF WS-HOGAR = 'N' OR 'n' THEN
+                           DISPLAY 'MUJER INDEPENDIENTE'
+                           LINE 04 POSITION 01
+                            IF WS-PRODUCTO = 1 THEN
+                                SET WS-INT-TDC TO TRUE
+                                DISPLAY WS-INTERES LINE 04 POSITION 01
+                            ELSE
+                                IF WS-PRODUCTO = 2 THEN
+                                    SET WS-INT-HIP TO TRUE
+                                ELSE
+                                    IF WS-PRODUCTO = 3 THEN
+                                         SET WS-INT-VEH TO TRUE
+                                    ELSE
+                                         IF WS-PRODUCTO = 4 THEN
+                                             SET WS-INT-INV TO TRUE
+                                         ELSE 
+                                             IF WS-PRODUCTO = 5 THEN 
+                                                 SET WS-INT-EDU TO TRUE
+                                             ELSE
+                                                 PERFORM 
+                                             2009-OPCION-NO-ENCONTRADA
+                                             END-IF
+                                         END-IF
+                                    END-IF
+                                END-IF
+                            END-IF
+
+
+
+                       END-IF
+                   END-IF
+               ELSE
+                   PERFORM 2009-OPCION-NO-ENCONTRADA
                END-IF
            END-IF.
 
-       2007-PROCESOS.
+       2007-HALLAR-PRODUCTO.
+           IF WS-PRODUCTO <= 0 OR > 5 
+             PERFORM 2009-OPCION-NO-ENCONTRADA
+           ELSE
+             IF WS-PRODUCTO = 1 THEN
+               SET WS-PRO-TDC TO TRUE
+             ELSE
+               IF WS-PRODUCTO = 2 THEN
+                  SET WS-PRO-HIP TO TRUE
+               ELSE
+                  IF WS-PRODUCTO = 3 THEN
+                    SET WS-PRO-VEH TO TRUE
+                  ELSE
+                     IF WS-PRODUCTO = 4 THEN
+                       SET WS-PRO-INV TO TRUE
+                     ELSE
+                       IF WS-PRODUCTO = 5 THEN
+                         SET WS-PRO-EDU TO TRUE
+                       END-IF
+                     END-IF
+                  END-IF
+               END-IF
+             END-IF
+           END-IF.
+
+      *>  2008-HALLAR-HOGAR.
+      *>      IF WS-HOGAR = 'S' OR 's' THEN
+      *>          MOVE 'SI' TO WS-HOGAR
+      *>      ELSE
+      *>          IF WS-HOGAR = 'N' OR 'n' THEN
+      *>              MOVE 'NO' TO WS-HOGAR
+      *>          ELSE
+      *>              PERFORM 2009-OPCION-NO-ENCONTRADA
+      *>          END-IF
+      *>      END-IF.
+
+       2005-SALIDA.
+           DISPLAY CLEAR-SCREEN
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
-           PERFORM 2006-VALIDACIONES-PRODUCTOS.
-
-       2008-SALIDAS.
            DISPLAY 'CAPITAL:'            LINE 07 POSITION 01 
-           DISPLAY WS-MAS-CAP            LINE 07 POSITION 10
+           DISPLAY WS-MAS-CAP            LINE 07 POSITION 25
+           DISPLAY 'TIEMPO A PAGAR EN ANOS:' 
+                                         LINE 08 POSITION 01
+           DISPLAY WS-ANO-TOT            LINE 08 POSITION 25
            DISPLAY 'PRODUCTO SELECCIONADO:'
-                                         LINE 07 POSITION 01
-           DISPLAY WS-PRODUCTO-SELECCIONADO
-                                         LINE 07 POSITION 25.
+                                         LINE 09 POSITION 01
+           DISPLAY WS-PRO-SEL            LINE 09 POSITION 25
+           DISPLAY 'GENERO:'             LINE 10 POSITION 01
+           DISPLAY WS-GEN-SEL            LINE 10 POSITION 25
+           DISPLAY 'CABEZA DE HOGAR:'    LINE 11 POSITION 01
+           DISPLAY WS-HOGAR              LINE 11 POSITION 25
+           DISPLAY 'SEGURO:'             LINE 12 POSITION 01
+           MOVE WS-SEGURO                TO WS-MAS-SEG
+           DISPLAY WS-MAS-SEG            LINE 12 POSITION 25
+           DISPLAY '%'                   LINE 12 POSITION 29.
+
 
        2009-OPCION-NO-ENCONTRADA.
            DISPLAY CLEAR-SCREEN
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
            DISPLAY 'OPCION NO ENCONTRADA'
-                                     LINE 07 POSITION 01
+                                     LINE 12 POSITION 30
            PERFORM 2020-OPCION
            PERFORM 3000-FINAL.
 
@@ -248,6 +402,6 @@
            DISPLAY 'PRESIONE UNA TECLA PARA CONTINUAR'
                                          LINE 24 POSITION 23
            ACCEPT WS-OPCION              LINE 24 POSITION 57. 
- 
+
        3000-FINAL.
            STOP RUN.
