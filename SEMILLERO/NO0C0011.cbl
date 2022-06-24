@@ -18,7 +18,7 @@
       * HOMBRE: -1.5% AL PRODUCTO
 
       * SALIDA:
-      * [] INTERES MENSUAL [] SEGURO MENSUAL [] TOTAL MENSUAL
+      * [] INTERES MENSUAL [X] SEGURO MENSUAL [] TOTAL MENSUAL
       * [] TOTAL A PAGAR DURANTE EL TIEMPO
       * INTERES, CAPITAL, SEGURO, total mensual
       *----------------------------------------------------------------*
@@ -78,8 +78,10 @@
       *----------------------------------------------------------------*
       * INTERESES
       *----------------------------------------------------------------*
-       01  WS-SEGURO                  PIC 9(02)V9(01) VALUE 1.5.
-       01  WS-MAS-SEG                 PIC 9(01).9(01).
+       01  WS-SEGURO                  PIC 9(02)V9(02) VALUE 1.5.
+       01  WS-SEG-TOT                 PIC 9(15)V9(02) VALUE ZEROS.
+       01  WS-SEG-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02). 
+       01  WS-MAS-SEG                 PIC Z9.9(02).
 
        01  WS-INTERES                 PIC 9(02).9(01) VALUE ZEROS.
       * HOMBRE O MUJER NO CABEZA DE HOGAR 
@@ -123,6 +125,10 @@
        01  WS-GEN-SEL                 PIC A(06) VALUE SPACES.
 
        01  WS-HOGAR                   PIC A(02) VALUE SPACES.
+
+       01  WS-MES-TOT                 PIC 9(15)V9(02) VALUE ZEROES.
+       01  WS-MES-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-TOTAL                   PIC 9(15)V9(02) VALUE ZEROS.
        
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -134,10 +140,11 @@
        1000-PRINCIPAL.
        PERFORM 2001-FECHAS
        PERFORM 2004-INFORMACION
-       PERFORM 2006-HALLAR-GENERO
-      *>  PERFORM 2007-HALLAR-PRODUCTO
-      *>  PERFORM 2008-HALLAR-HOGAR
-      *>  PERFORM 2005-SALIDA
+       PERFORM 2008-HALLAR-INTERES
+       PERFORM 2009-HALLAR-PRODUCTO
+       PERFORM 2010-HALLAR-HOGAR
+       PERFORM 2011-HALLAR-SEGURO-MENSUAL
+       PERFORM 2019-SALIDA
        PERFORM 3000-FINAL.
 
       *----------------------------------------------------------------*
@@ -203,64 +210,88 @@
            DISPLAY 'OPCION) '            LINE 24 POSITION 01
            ACCEPT WS-HOGAR               LINE 24 POSITION 09.
 
-       2006-HALLAR-GENERO.
-           DISPLAY CLEAR-SCREEN
+       2005-INTERES-INDEPENDIENTE.
+           IF WS-PRODUCTO = 1 THEN
+             SET WS-INT-TDC TO TRUE
+           ELSE
+             IF WS-PRODUCTO = 2 THEN
+               SET WS-INT-HIP TO TRUE
+             ELSE
+               IF WS-PRODUCTO = 3 THEN
+                 SET WS-INT-VEH TO TRUE
+               ELSE
+                 IF WS-PRODUCTO = 4 THEN
+                   SET WS-INT-INV TO TRUE
+                 ELSE 
+                   IF WS-PRODUCTO = 5 THEN 
+                     SET WS-INT-EDU TO TRUE
+                   ELSE
+                     PERFORM 
+                       2009-OPCION-NO-ENCONTRADA
+                   END-IF
+                 END-IF
+               END-IF
+             END-IF
+           END-IF.
+
+
+       2006-INTERES-HOMBRE-HOGAR.
+           IF WS-PRODUCTO = 1 THEN
+             SET WS-HOM-TDC TO TRUE
+           ELSE
+             IF WS-PRODUCTO = 2 THEN
+               SET WS-HOM-HIP TO TRUE
+             ELSE
+               IF WS-PRODUCTO = 3 THEN
+                 SET WS-HOM-VEH TO TRUE
+               ELSE
+                IF WS-PRODUCTO = 4 THEN
+                  SET WS-HOM-INV TO TRUE
+                ELSE 
+                  IF WS-PRODUCTO = 5 THEN 
+                    SET WS-HOM-EDU TO TRUE
+                  ELSE
+                    PERFORM 2009-OPCION-NO-ENCONTRADA
+                  END-IF
+                END-IF
+               END-IF
+             END-IF
+           END-IF.
+
+       2007-INTERES-MUJER-HOGAR.
+           IF WS-PRODUCTO = 1 THEN
+             SET WS-MUJ-TDC TO TRUE
+           ELSE
+             IF WS-PRODUCTO = 2 THEN
+               SET WS-MUJ-HIP TO TRUE
+             ELSE
+               IF WS-PRODUCTO = 3 THEN
+                 SET WS-MUJ-VEH TO TRUE
+               ELSE
+                 IF WS-PRODUCTO = 4 THEN
+                   SET WS-MUJ-INV TO TRUE
+                 ELSE 
+                   IF WS-PRODUCTO = 5 THEN 
+                     SET WS-MUJ-EDU TO TRUE
+                   ELSE
+                     PERFORM 
+                       2009-OPCION-NO-ENCONTRADA
+                   END-IF
+                 END-IF
+               END-IF
+             END-IF
+            END-IF.
+
+       2008-HALLAR-INTERES.
            IF WS-GENERO = 'H' OR 'h' THEN
                MOVE 'HOMBRE' TO WS-GEN-SEL
                IF WS-HOGAR = 'S' OR 's' THEN
                   DISPLAY 'HOMBRE CABEZA DE HOGAR' LINE 03 POSITION 01
-                  IF WS-PRODUCTO = 1 THEN
-                      SET WS-HOM-TDC TO TRUE
-                      DISPLAY WS-INTERES LINE 04 POSITION 01
-                  ELSE
-                      IF WS-PRODUCTO = 2 THEN
-                          SET WS-HOM-HIP TO TRUE
-                      ELSE
-                          IF WS-PRODUCTO = 3 THEN
-                               SET WS-HOM-VEH TO TRUE
-                          ELSE
-                               IF WS-PRODUCTO = 4 THEN
-                                   SET WS-HOM-INV TO TRUE
-                               ELSE 
-                                   IF WS-PRODUCTO = 5 THEN 
-                                       SET WS-HOM-EDU TO TRUE
-                                   ELSE
-                                       PERFORM 2009-OPCION-NO-ENCONTRADA
-                                   END-IF
-                               END-IF
-                          END-IF
-                      END-IF
-                  END-IF
-
+                  PERFORM 2006-INTERES-HOMBRE-HOGAR
                ELSE
                   IF WS-HOGAR = 'N' OR 'n' THEN
                     DISPLAY 'HOMBRE INDEPENDIENTE' LINE 03 POSITION 01
-
-                      IF WS-PRODUCTO = 1 THEN
-                          SET WS-INT-TDC TO TRUE
-                          DISPLAY WS-INTERES LINE 04 POSITION 01
-                      ELSE
-                          IF WS-PRODUCTO = 2 THEN
-                              SET WS-INT-HIP TO TRUE
-                          ELSE
-                              IF WS-PRODUCTO = 3 THEN
-                                   SET WS-INT-VEH TO TRUE
-                              ELSE
-                                   IF WS-PRODUCTO = 4 THEN
-                                       SET WS-INT-INV TO TRUE
-                                   ELSE 
-                                       IF WS-PRODUCTO = 5 THEN 
-                                           SET WS-INT-EDU TO TRUE
-                                       ELSE
-                                           PERFORM 
-                                           2009-OPCION-NO-ENCONTRADA
-                                       END-IF
-                                   END-IF
-                              END-IF
-                          END-IF
-                      END-IF
-
-
+                    PERFORM 2005-INTERES-INDEPENDIENTE
                   END-IF
                END-IF
            ELSE
@@ -269,61 +300,12 @@
                    IF WS-HOGAR = 'S' OR 's' THEN
                        DISPLAY 'MUJER CABEZA DE HOGAR' 
                        LINE 04 POSITION 01
-                      IF WS-PRODUCTO = 1 THEN
-                          SET WS-MUJ-TDC TO TRUE
-                          DISPLAY WS-INTERES LINE 04 POSITION 01
-                      ELSE
-                          IF WS-PRODUCTO = 2 THEN
-                              SET WS-MUJ-HIP TO TRUE
-                          ELSE
-                              IF WS-PRODUCTO = 3 THEN
-                                   SET WS-MUJ-VEH TO TRUE
-                              ELSE
-                                   IF WS-PRODUCTO = 4 THEN
-                                       SET WS-MUJ-INV TO TRUE
-                                   ELSE 
-                                       IF WS-PRODUCTO = 5 THEN 
-                                           SET WS-MUJ-EDU TO TRUE
-                                       ELSE
-                                           PERFORM 
-                                           2009-OPCION-NO-ENCONTRADA
-                                       END-IF
-                                   END-IF
-                              END-IF
-                          END-IF
-                      END-IF
-
-
+                       PERFORM 2007-INTERES-MUJER-HOGAR
                    ELSE
                        IF WS-HOGAR = 'N' OR 'n' THEN
                            DISPLAY 'MUJER INDEPENDIENTE'
                            LINE 04 POSITION 01
-                            IF WS-PRODUCTO = 1 THEN
-                                SET WS-INT-TDC TO TRUE
-                                DISPLAY WS-INTERES LINE 04 POSITION 01
-                            ELSE
-                                IF WS-PRODUCTO = 2 THEN
-                                    SET WS-INT-HIP TO TRUE
-                                ELSE
-                                    IF WS-PRODUCTO = 3 THEN
-                                         SET WS-INT-VEH TO TRUE
-                                    ELSE
-                                         IF WS-PRODUCTO = 4 THEN
-                                             SET WS-INT-INV TO TRUE
-                                         ELSE 
-                                             IF WS-PRODUCTO = 5 THEN 
-                                                 SET WS-INT-EDU TO TRUE
-                                             ELSE
-                                                 PERFORM 
-                                             2009-OPCION-NO-ENCONTRADA
-                                             END-IF
-                                         END-IF
-                                    END-IF
-                                END-IF
-                            END-IF
-
-
-
+                           PERFORM 2005-INTERES-INDEPENDIENTE
                        END-IF
                    END-IF
                ELSE
@@ -331,7 +313,7 @@
                END-IF
            END-IF.
 
-       2007-HALLAR-PRODUCTO.
+       2009-HALLAR-PRODUCTO.
            IF WS-PRODUCTO <= 0 OR > 5 
              PERFORM 2009-OPCION-NO-ENCONTRADA
            ELSE
@@ -356,18 +338,31 @@
              END-IF
            END-IF.
 
-      *>  2008-HALLAR-HOGAR.
-      *>      IF WS-HOGAR = 'S' OR 's' THEN
-      *>          MOVE 'SI' TO WS-HOGAR
-      *>      ELSE
-      *>          IF WS-HOGAR = 'N' OR 'n' THEN
-      *>              MOVE 'NO' TO WS-HOGAR
-      *>          ELSE
-      *>              PERFORM 2009-OPCION-NO-ENCONTRADA
-      *>          END-IF
-      *>      END-IF.
+       2010-HALLAR-HOGAR.
+           IF WS-HOGAR = 'S' OR 's' THEN
+               MOVE 'SI' TO WS-HOGAR
+           ELSE
+               IF WS-HOGAR = 'N' OR 'n' THEN
+                   MOVE 'NO' TO WS-HOGAR
+               ELSE
+                   PERFORM 2009-OPCION-NO-ENCONTRADA
+               END-IF
+           END-IF.
 
-       2005-SALIDA.
+       2011-HALLAR-SEGURO-MENSUAL.
+           COMPUTE WS-SEG-TOT ROUNDED = WS-CAPITAL * WS-SEGURO / 100
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-SEG-TOT TO WS-SEG-TOT-MAS
+           END-COMPUTE.
+
+       2013-HALLAR-INTERESES-MENSUALES.
+           COMPUTE WS-MES-TOT ROUNDED = WS-CAPITAL * WS-INTERES
+            (WS-ANO-TOT * 12)
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-MES-TOT TO WS-MES-TOT-MAS
+           END-COMPUTE.
+
+       2019-SALIDA.
            DISPLAY CLEAR-SCREEN
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
@@ -383,10 +378,18 @@
            DISPLAY WS-GEN-SEL            LINE 10 POSITION 25
            DISPLAY 'CABEZA DE HOGAR:'    LINE 11 POSITION 01
            DISPLAY WS-HOGAR              LINE 11 POSITION 25
-           DISPLAY 'SEGURO:'             LINE 12 POSITION 01
+           DISPLAY 'PORCENTAJE INTERES:' LINE 12 POSITION 01
+           DISPLAY WS-INTERES            LINE 12 POSITION 25
+           DISPLAY 'SEGURO:'             LINE 13 POSITION 01
            MOVE WS-SEGURO                TO WS-MAS-SEG
-           DISPLAY WS-MAS-SEG            LINE 12 POSITION 25
-           DISPLAY '%'                   LINE 12 POSITION 29.
+           DISPLAY WS-MAS-SEG            LINE 13 POSITION 25
+           DISPLAY '%'                   LINE 13 POSITION 29
+           DISPLAY 'RESULTADOS:'         LINE 15 POSITION 01
+           DISPLAY 'SEGURO MENSUAL:'     LINE 16 POSITION 01
+           DISPLAY WS-SEG-TOT-MAS        LINE 16 POSITION 25
+           DISPLAY 'INTERES MENSUAL:'    LINE 17 POSITION 01
+           DISPLAY WS-MES-TOT-MAS        LINE 17 POSITION 25
+           PERFORM 2013-HALLAR-INTERESES-MENSUALES.
 
 
        2009-OPCION-NO-ENCONTRADA.
