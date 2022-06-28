@@ -101,20 +101,6 @@
            88 WS-INT-INV              VALUE 0.240.
            88 WS-INT-EDU              VALUE 0.190.
 
-      * HOMBRE CABEZA DE HOGAR
-           88 WS-HOM-TDC              VALUE 0.285.
-           88 WS-HOM-HIP              VALUE 0.145.
-           88 WS-HOM-VEH              VALUE 0.165.
-           88 WS-HOM-INV              VALUE 0.225.
-           88 WS-HOM-EDU              VALUE 0.175.
-
-      * MUJER CABEZA DE HOGAR
-           88 WS-MUJ-TDC              VALUE 0.280.
-           88 WS-MUJ-HIP              VALUE 0.140.
-           88 WS-MUJ-VEH              VALUE 0.160.
-           88 WS-MUJ-INV              VALUE 0.220.
-           88 WS-MUJ-EDU              VALUE 0.170.
-
       *----------------------------------------------------------------*
       * PRODUCTOS
       *----------------------------------------------------------------*
@@ -172,13 +158,14 @@
        1000-PRINCIPAL.
        PERFORM 2001-FECHAS
        PERFORM 2004-INFORMACION
-       PERFORM 2008-HALLAR-INTERES
-       PERFORM 2009-HALLAR-PRODUCTO
+       PERFORM 2006-ACTIVAR-TASA-PRODUCTO.
+       PERFORM 2008-HALLAR-DESCUENTOS
+       PERFORM 2007-HALLAR-INTERESES
        PERFORM 2010-HALLAR-HOGAR
        PERFORM 2011-HALLAR-SEGURO-MENSUAL
-       PERFORM 2013-HALLAR-INTERESES-MENSUALES.
+       PERFORM 2013-HALLAR-INTERESES-MENSUALES
        PERFORM 2014-HALLAR-TOTAL
-       PERFORM 2015-HALLAR-MENSUALES-TOTALES.
+       PERFORM 2015-HALLAR-MENSUALES-TOTALES
        PERFORM 2016-HALLAR-CAPITAL-MENSUAL
        PERFORM 2017-HALLAR-CUOTA-MENSUAL
        PERFORM 2019-SALIDA
@@ -247,45 +234,26 @@
            DISPLAY 'OPCION) '            LINE 24 POSITION 01
            ACCEPT WS-HOGAR               LINE 24 POSITION 09.
 
-       2005-INTERES-INDEPENDIENTE.
+       2006-ACTIVAR-TASA-PRODUCTO.
            IF WS-PRODUCTO = 1 THEN
              SET WS-INT-TDC TO TRUE
+             SET WS-PRO-TDC TO TRUE
            ELSE
              IF WS-PRODUCTO = 2 THEN
                SET WS-INT-HIP TO TRUE
+               SET WS-PRO-HIP TO TRUE
              ELSE
                IF WS-PRODUCTO = 3 THEN
                  SET WS-INT-VEH TO TRUE
-               ELSE
-                 IF WS-PRODUCTO = 4 THEN
-                   SET WS-INT-INV TO TRUE
-                 ELSE 
-                   IF WS-PRODUCTO = 5 THEN 
-                     SET WS-INT-EDU TO TRUE
-                   ELSE
-                     PERFORM 
-                       2009-OPCION-NO-ENCONTRADA
-                   END-IF
-                 END-IF
-               END-IF
-             END-IF
-           END-IF.
-
-       2006-INTERES-HOMBRE-HOGAR.
-           IF WS-PRODUCTO = 1 THEN
-             SET WS-HOM-TDC TO TRUE
-           ELSE
-             IF WS-PRODUCTO = 2 THEN
-               SET WS-HOM-HIP TO TRUE
-             ELSE
-               IF WS-PRODUCTO = 3 THEN
-                 SET WS-HOM-VEH TO TRUE
+                 SET WS-PRO-VEH TO TRUE
                ELSE
                 IF WS-PRODUCTO = 4 THEN
-                  SET WS-HOM-INV TO TRUE
+                  SET WS-INT-INV TO TRUE
+                  SET WS-PRO-INV TO TRUE
                 ELSE 
                   IF WS-PRODUCTO = 5 THEN 
-                    SET WS-HOM-EDU TO TRUE
+                    SET WS-INT-EDU TO TRUE
+                    SET WS-PRO-EDU TO TRUE
                   ELSE
                     PERFORM 2009-OPCION-NO-ENCONTRADA
                   END-IF
@@ -294,61 +262,20 @@
              END-IF
            END-IF.
 
-       2007-INTERES-MUJER-HOGAR.
-           IF WS-PRODUCTO = 1 THEN
-             SET WS-MUJ-TDC TO TRUE
-           ELSE
-             IF WS-PRODUCTO = 2 THEN
-               SET WS-MUJ-HIP TO TRUE
-             ELSE
-               IF WS-PRODUCTO = 3 THEN
-                 SET WS-MUJ-VEH TO TRUE
-               ELSE
-                 IF WS-PRODUCTO = 4 THEN
-                   SET WS-MUJ-INV TO TRUE
-                 ELSE 
-                   IF WS-PRODUCTO = 5 THEN 
-                     SET WS-MUJ-EDU TO TRUE
-                   ELSE
-                     PERFORM 
-                       2009-OPCION-NO-ENCONTRADA
-                   END-IF
-                 END-IF
-               END-IF
-             END-IF
-            END-IF.
+       2007-HALLAR-INTERESES.
+          *>  INTERESES= TASA DE INTERES - DESCUENTOS
+           SUBTRACT WS-DESCUENTO FROM WS-INTERES END-SUBTRACT.
 
-       2008-HALLAR-INTERES.
-           IF WS-GENERO = 'H' OR 'h' THEN
-               MOVE 'HOMBRE' TO WS-GEN-SEL
-               IF WS-HOGAR = 'S' OR 's' THEN
-                  DISPLAY 'HOMBRE CABEZA DE HOGAR' LINE 03 POSITION 01
-                  PERFORM 2006-INTERES-HOMBRE-HOGAR
-               ELSE
-                  IF WS-HOGAR = 'N' OR 'n' THEN
-                    DISPLAY 'HOMBRE INDEPENDIENTE' LINE 03 POSITION 01
-                    PERFORM 2005-INTERES-INDEPENDIENTE
-                  END-IF
-               END-IF
+       2008-HALLAR-DESCUENTOS.
+           IF WS-HOGAR = 'S' OR 's' THEN
+              IF WS-GENERO = 'H' OR 'h' THEN
+                SET WS-DST-HOM TO TRUE
+              ELSE
+                SET WS-DST-MUJ TO TRUE
+              END-IF
            ELSE
-               IF WS-GENERO = 'M' OR 'm'
-                   MOVE 'MUJER' TO WS-GEN-SEL
-                   IF WS-HOGAR = 'S' OR 's' THEN
-                       DISPLAY 'MUJER CABEZA DE HOGAR' 
-                       LINE 04 POSITION 01
-                       PERFORM 2007-INTERES-MUJER-HOGAR
-                   ELSE
-                       IF WS-HOGAR = 'N' OR 'n' THEN
-                           DISPLAY 'MUJER INDEPENDIENTE'
-                           LINE 04 POSITION 01
-                           PERFORM 2005-INTERES-INDEPENDIENTE
-                       END-IF
-                   END-IF
-               ELSE
-                   PERFORM 2009-OPCION-NO-ENCONTRADA
-               END-IF
-           END-IF
-           MOVE WS-INTERES TO WS-MAS-INT.
+                SET WS-DST-NO TO TRUE
+           END-IF.
 
        2009-HALLAR-PRODUCTO.
            IF WS-PRODUCTO <= 0 OR > 5 
