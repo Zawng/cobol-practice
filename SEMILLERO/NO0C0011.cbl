@@ -80,10 +80,19 @@
       *----------------------------------------------------------------*
        01  WS-SEGURO                  PIC 9V9(03) VALUE 0.015.
        01  WS-SEG-TOT                 PIC 9(15)V9(02) VALUE ZEROS.
+
+      * RECORDAR: MASCARAS QUE SE USAN NORMALMENTE 
        01  WS-SEG-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02). 
+      *01 MASCARA-INTERES             PIC Z9.99 
+
        01  WS-MAS-SEG                 PIC 9.9(03).
 
        01  WS-MAS-INT                 PIC Z9.9(03).
+       01  WS-DESCUENTO               PIC 9V9(03) VALUE ZEROS.
+           88 WS-DST-HOM              VALUE 0.015.
+           88 WS-DST-MUJ              VALUE 0.020.
+           88 WS-DST-NO               VALUE 0.000.
+
        01  WS-INTERES                 PIC 9V9(03) VALUE ZEROS.
       * HOMBRE O MUJER NO CABEZA DE HOGAR 
            88 WS-INT-TDC              VALUE 0.300.
@@ -110,9 +119,13 @@
       * PRODUCTOS
       *----------------------------------------------------------------*
        01  WS-CAPITAL                 PIC 9(15)V9(02) VALUE ZEROS.
+       01  WS-CAP-MES                 PIC 9(15)V9(02) VALUE ZEROS.                 
+       01  WS-CAPITAL-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-MAS-CAP                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
 
        01  WS-ANO-TOT                 PIC 9(02) VALUE ZEROS.
+       01  WS-CUOTAS                  PIC 9(03) VALUE ZEROS.
+       01  WS-CUOTAS-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
 
        01  WS-PRODUCTO                PIC 9(01) VALUE ZEROS.
        01  WS-PRO-SEL                 PIC X(24) VALUE SPACES.
@@ -138,6 +151,16 @@
 
        01  WS-INTERES-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-INTERES-TOT             PIC 9(15)V9(02) VALUE ZEROS.
+
+      * TECHO, ANOS BASE 
+       01  WS-ANOS-PROD               PIC 99 VALUE ZEROES.
+           88 WS-ANO-CRE              VALUE 05.
+           88 WS-ANO-HIP              VALUE 20.
+           88 WS-ANO-VEH              VALUE 06.
+           88 WS-ANO-INV              VALUE 05.
+           88 WS-ANO-EDU              VALUE 07.
+          
+       01  WS-CUOTA-MEN               PIC 9(15)V9(02) VALUE ZEROS.
        
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -156,6 +179,8 @@
        PERFORM 2013-HALLAR-INTERESES-MENSUALES.
        PERFORM 2014-HALLAR-TOTAL
        PERFORM 2015-HALLAR-MENSUALES-TOTALES.
+       PERFORM 2016-HALLAR-CAPITAL-MENSUAL
+       PERFORM 2017-HALLAR-CUOTA-MENSUAL
        PERFORM 2019-SALIDA
        PERFORM 3000-FINAL.
 
@@ -186,29 +211,29 @@
        2004-INFORMACION.
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
+      * TIPO DE PRODUCTO     
+           DISPLAY 'SELECCIONE UN PRODUCTO:'
+                                         LINE 07 POSITION 01
+           DISPLAY '1) TARJETA DE CREDITO       - 30%, 05 ANOS'
+                                         LINE 08 POSITION 01
+           DISPLAY '2) PRESTAMO HIPOTECARIO     - 16%, 20 ANOS'
+                                         LINE 09 POSITION 01
+           DISPLAY '3) PRESTAMO DE VEHICULO     - 18%, 06 ANOS'
+                                         LINE 10 POSITION 01
+           DISPLAY '4) PRESTAMO LIBRE INVERSION - 24%, 05 ANOS'
+                                         LINE 11 POSITION 01
+           DISPLAY '5) PRESTAMO PARA EDUCACION  - 19%, 07 ANOS'
+                                         LINE 12 POSITION 01
+           DISPLAY 'OPCION) '            LINE 13 POSITION 01
+           ACCEPT WS-PRODUCTO            LINE 14 POSITION 09
       * CAPITAL
-           DISPLAY 'INGRESE EL CAPITAL:' LINE 07 POSITION 01
-           ACCEPT WS-CAPITAL             LINE 07 POSITION 21
+           DISPLAY 'INGRESE EL CAPITAL:' LINE 16 POSITION 01
+           ACCEPT WS-CAPITAL             LINE 16 POSITION 21
            DIVIDE 100 INTO WS-CAPITAL    END-DIVIDE
            MOVE WS-CAPITAL               TO WS-MAS-CAP
       * TIEMPO EN AÑOS
-           DISPLAY 'TIEMPO EN ANOS:'     LINE 09 POSITION 01
-           ACCEPT WS-ANO-TOT             LINE 09 POSITION 21
-      * TIPO DE PRODUCTO     
-           DISPLAY 'SELECCIONE UN PRODUCTO:'
-                                         LINE 11 POSITION 01
-           DISPLAY '1) TARJETA DE CREDITO       - 30%, 05 ANOS'
-                                         LINE 12 POSITION 01
-           DISPLAY '2) PRESTAMO HIPOTECARIO     - 16%, 20 ANOS'
-                                         LINE 13 POSITION 01
-           DISPLAY '3) PRESTAMO DE VEHICULO     - 18%, 06 ANOS'
-                                         LINE 14 POSITION 01
-           DISPLAY '4) PRESTAMO LIBRE INVERSION - 24%, 05 ANOS'
-                                         LINE 15 POSITION 01
-           DISPLAY '5) PRESTAMO PARA EDUCACION  - 19%, 07 ANOS'
-                                         LINE 16 POSITION 01
-           DISPLAY 'OPCION) '            LINE 17 POSITION 01
-           ACCEPT WS-PRODUCTO            LINE 17 POSITION 09
+           DISPLAY 'TIEMPO EN ANOS:'     LINE 18 POSITION 01
+           ACCEPT WS-ANO-TOT             LINE 18 POSITION 21
       * GENERO DEL USUARIO     
            DISPLAY 'SELECCIONE SU GENERO:'
                                          LINE 19 POSITION 01
@@ -362,14 +387,14 @@
            END-IF.
 
        2011-HALLAR-SEGURO-MENSUAL.
-           COMPUTE WS-SEG-TOT ROUNDED = WS-CAPITAL * WS-SEGURO
+           COMPUTE WS-SEG-TOT ROUNDED = WS-CAPITAL * ( WS-SEGURO / 12 )
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR MOVE WS-SEG-TOT TO WS-SEG-TOT-MAS
            END-COMPUTE.
 
        2013-HALLAR-INTERESES-MENSUALES.
-           COMPUTE WS-MES-TOT ROUNDED = (WS-CAPITAL * WS-INTERES *
-            WS-ANO-TOT) / WS-ANO-TOT
+           COMPUTE WS-MES-TOT ROUNDED = WS-CAPITAL * (WS-INTERES
+               / 12) * (WS-ANO-TOT / 12)
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR MOVE WS-MES-TOT TO WS-MES-TOT-MAS
            END-COMPUTE. 
@@ -393,6 +418,23 @@
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR MOVE WS-INTERES-TOT TO WS-INTERES-MAS
            END-COMPUTE.
+
+       2016-HALLAR-CAPITAL-MENSUAL.
+      *    CAPITAL / MESES,      
+           MULTIPLY WS-ANO-TOT BY 12 GIVING WS-CUOTAS ROUNDED 
+           END-MULTIPLY
+           DIVIDE WS-CUOTAS INTO WS-CAPITAL GIVING WS-CAP-MES 
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-CAP-MES TO WS-CAPITAL-MAS
+           END-DIVIDE.
+
+       2017-HALLAR-CUOTA-MENSUAL.
+      *     SEGURO + INTERES + CAPITAL
+           ADD WS-CAP-MES WS-MES-TOT WS-SEG-TOT GIVING WS-CUOTA-MEN
+               ROUNDED
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-CUOTA-MEN TO WS-CUOTAS-MAS
+           END-ADD.
 
        2019-SALIDA.
            DISPLAY CLEAR-SCREEN
@@ -422,12 +464,16 @@
            DISPLAY WS-SEG-TOT-MAS        LINE 16 POSITION 25
            DISPLAY 'INTERES MENSUAL:'    LINE 17 POSITION 01
            DISPLAY WS-MES-TOT-MAS        LINE 17 POSITION 25
-           DISPLAY 'SEGURO TOTAL:'       LINE 19 POSITION 01
-           DISPLAY WS-SEGURO-MAS         LINE 19 POSITION 25
-           DISPLAY 'INTERES TOTAL:'      LINE 20 POSITION 01
-           DISPLAY WS-INTERES-MAS        LINE 20 POSITION 25
-           DISPLAY 'TOTAL A PAGAR:'      LINE 21 POSITION 01
-           DISPLAY WS-MAS-TOT            LINE 21 POSITION 30.
+           DISPLAY 'CAPITAL MENSUAL:'    LINE 18 POSITION 01
+           DISPLAY WS-CAPITAL-MAS        LINE 18 POSITION 25
+           DISPLAY 'VALOR MENSUAL: '     LINE 19 POSITION 01
+           DISPLAY WS-CUOTAS-MAS         LINE 19 POSITION 25
+           DISPLAY 'SEGURO TOTAL:'       LINE 21 POSITION 01
+           DISPLAY WS-SEGURO-MAS         LINE 21 POSITION 25
+           DISPLAY 'INTERES TOTAL:'      LINE 22 POSITION 01
+           DISPLAY WS-INTERES-MAS        LINE 22 POSITION 25
+           DISPLAY 'TOTAL A PAGAR:'      LINE 23 POSITION 01
+           DISPLAY WS-MAS-TOT            LINE 23 POSITION 30.
 
        2009-OPCION-NO-ENCONTRADA.
            DISPLAY CLEAR-SCREEN
