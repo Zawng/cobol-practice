@@ -46,8 +46,8 @@
        01  WS-ASTERISCOS              PIC X(80) VALUE ALL '*'.
        01  WS-BANNER.
            02 FILLER                  PIC X(16) VALUE ALL '-'.
-           02 FILLER                  PIC A(49) VALUE 'VALOR DE CUOTA A P
-      -      'AGAR DEPENDIENDO DE UN PRODUCTO'.
+           02 FILLER                  PIC A(49) VALUE 'VALOR DE CUOTA A 
+      -      'PAGAR DEPENDIENDO DE UN PRODUCTO'.
            02 FILLER                  PIC X(15) VALUE ALL '-'.
 
       *----------------------------------------------------------------*
@@ -78,32 +78,33 @@
       *----------------------------------------------------------------*
       * INTERESES
       *----------------------------------------------------------------*
-       01  WS-SEGURO                  PIC 9(02)V9(02) VALUE 1.5.
+       01  WS-SEGURO                  PIC 9V9(03) VALUE 0.015.
        01  WS-SEG-TOT                 PIC 9(15)V9(02) VALUE ZEROS.
        01  WS-SEG-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02). 
-       01  WS-MAS-SEG                 PIC Z9.9(02).
+       01  WS-MAS-SEG                 PIC 9.9(03).
 
-       01  WS-INTERES                 PIC 9(02).9(01) VALUE ZEROS.
+       01  WS-MAS-INT                 PIC Z9.9(03).
+       01  WS-INTERES                 PIC 9V9(03) VALUE ZEROS.
       * HOMBRE O MUJER NO CABEZA DE HOGAR 
-           88 WS-INT-TDC              VALUE 30.0.
-           88 WS-INT-HIP              VALUE 16.0.
-           88 WS-INT-VEH              VALUE 18.0.
-           88 WS-INT-INV              VALUE 24.0.
-           88 WS-INT-EDU              VALUE 19.0.
+           88 WS-INT-TDC              VALUE 0.300.
+           88 WS-INT-HIP              VALUE 0.160.
+           88 WS-INT-VEH              VALUE 0.180.
+           88 WS-INT-INV              VALUE 0.240.
+           88 WS-INT-EDU              VALUE 0.190.
 
       * HOMBRE CABEZA DE HOGAR
-           88 WS-HOM-TDC              VALUE 28.5.
-           88 WS-HOM-HIP              VALUE 14.5.
-           88 WS-HOM-VEH              VALUE 16.5.
-           88 WS-HOM-INV              VALUE 22.5.
-           88 WS-HOM-EDU              VALUE 17.5.
+           88 WS-HOM-TDC              VALUE 0.285.
+           88 WS-HOM-HIP              VALUE 0.145.
+           88 WS-HOM-VEH              VALUE 0.165.
+           88 WS-HOM-INV              VALUE 0.225.
+           88 WS-HOM-EDU              VALUE 0.175.
 
       * MUJER CABEZA DE HOGAR
-           88 WS-MUJ-TDC              VALUE 28.0.
-           88 WS-MUJ-HIP              VALUE 14.0.
-           88 WS-MUJ-VEH              VALUE 16.0.
-           88 WS-MUJ-INV              VALUE 22.0.
-           88 WS-MUJ-EDU              VALUE 17.0.
+           88 WS-MUJ-TDC              VALUE 0.280.
+           88 WS-MUJ-HIP              VALUE 0.140.
+           88 WS-MUJ-VEH              VALUE 0.160.
+           88 WS-MUJ-INV              VALUE 0.220.
+           88 WS-MUJ-EDU              VALUE 0.170.
 
       *----------------------------------------------------------------*
       * PRODUCTOS
@@ -128,7 +129,15 @@
 
        01  WS-MES-TOT                 PIC 9(15)V9(02) VALUE ZEROES.
        01  WS-MES-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
+
+       01  WS-MAS-TOT                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-TOTAL                   PIC 9(15)V9(02) VALUE ZEROS.
+
+       01  WS-SEGURO-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-SEGURO-TOT              PIC 9(15)V9(02) VALUE ZEROS.
+
+       01  WS-INTERES-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-INTERES-TOT             PIC 9(15)V9(02) VALUE ZEROS.
        
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -144,6 +153,9 @@
        PERFORM 2009-HALLAR-PRODUCTO
        PERFORM 2010-HALLAR-HOGAR
        PERFORM 2011-HALLAR-SEGURO-MENSUAL
+       PERFORM 2013-HALLAR-INTERESES-MENSUALES.
+       PERFORM 2014-HALLAR-TOTAL
+       PERFORM 2015-HALLAR-MENSUALES-TOTALES.
        PERFORM 2019-SALIDA
        PERFORM 3000-FINAL.
 
@@ -234,7 +246,6 @@
              END-IF
            END-IF.
 
-
        2006-INTERES-HOMBRE-HOGAR.
            IF WS-PRODUCTO = 1 THEN
              SET WS-HOM-TDC TO TRUE
@@ -311,7 +322,8 @@
                ELSE
                    PERFORM 2009-OPCION-NO-ENCONTRADA
                END-IF
-           END-IF.
+           END-IF
+           MOVE WS-INTERES TO WS-MAS-INT.
 
        2009-HALLAR-PRODUCTO.
            IF WS-PRODUCTO <= 0 OR > 5 
@@ -350,16 +362,36 @@
            END-IF.
 
        2011-HALLAR-SEGURO-MENSUAL.
-           COMPUTE WS-SEG-TOT ROUNDED = WS-CAPITAL * WS-SEGURO / 100
+           COMPUTE WS-SEG-TOT ROUNDED = WS-CAPITAL * WS-SEGURO
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR MOVE WS-SEG-TOT TO WS-SEG-TOT-MAS
            END-COMPUTE.
 
        2013-HALLAR-INTERESES-MENSUALES.
-           COMPUTE WS-MES-TOT ROUNDED = WS-CAPITAL * WS-INTERES
-            (WS-ANO-TOT * 12)
+           COMPUTE WS-MES-TOT ROUNDED = (WS-CAPITAL * WS-INTERES *
+            WS-ANO-TOT) / WS-ANO-TOT
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR MOVE WS-MES-TOT TO WS-MES-TOT-MAS
+           END-COMPUTE. 
+
+       2014-HALLAR-TOTAL.
+           COMPUTE WS-TOTAL ROUNDED = WS-CAPITAL + 
+               (WS-SEG-TOT * (WS-ANO-TOT * 12)) +
+               (WS-MES-TOT * (WS-ANO-TOT * 12))
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-TOTAL TO WS-MAS-TOT
+               END-COMPUTE.
+
+       2015-HALLAR-MENSUALES-TOTALES.
+           COMPUTE WS-SEGURO-TOT ROUNDED = WS-SEG-TOT * 
+           (WS-ANO-TOT * 12)
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-SEGURO-TOT TO WS-SEGURO-MAS
+           END-COMPUTE
+           COMPUTE WS-INTERES-TOT ROUNDED = WS-MES-TOT * 
+           (WS-ANO-TOT * 12)
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR MOVE WS-INTERES-TOT TO WS-INTERES-MAS
            END-COMPUTE.
 
        2019-SALIDA.
@@ -379,25 +411,30 @@
            DISPLAY 'CABEZA DE HOGAR:'    LINE 11 POSITION 01
            DISPLAY WS-HOGAR              LINE 11 POSITION 25
            DISPLAY 'PORCENTAJE INTERES:' LINE 12 POSITION 01
-           DISPLAY WS-INTERES            LINE 12 POSITION 25
+           DISPLAY '%'                   LINE 12 POSITION 31
+           DISPLAY WS-MAS-INT            LINE 12 POSITION 25
            DISPLAY 'SEGURO:'             LINE 13 POSITION 01
            MOVE WS-SEGURO                TO WS-MAS-SEG
            DISPLAY WS-MAS-SEG            LINE 13 POSITION 25
-           DISPLAY '%'                   LINE 13 POSITION 29
+           DISPLAY '%'                   LINE 13 POSITION 30
            DISPLAY 'RESULTADOS:'         LINE 15 POSITION 01
            DISPLAY 'SEGURO MENSUAL:'     LINE 16 POSITION 01
            DISPLAY WS-SEG-TOT-MAS        LINE 16 POSITION 25
            DISPLAY 'INTERES MENSUAL:'    LINE 17 POSITION 01
            DISPLAY WS-MES-TOT-MAS        LINE 17 POSITION 25
-           PERFORM 2013-HALLAR-INTERESES-MENSUALES.
-
+           DISPLAY 'SEGURO TOTAL:'       LINE 19 POSITION 01
+           DISPLAY WS-SEGURO-MAS         LINE 19 POSITION 25
+           DISPLAY 'INTERES TOTAL:'      LINE 20 POSITION 01
+           DISPLAY WS-INTERES-MAS        LINE 20 POSITION 25
+           DISPLAY 'TOTAL A PAGAR:'      LINE 21 POSITION 01
+           DISPLAY WS-MAS-TOT            LINE 21 POSITION 30.
 
        2009-OPCION-NO-ENCONTRADA.
            DISPLAY CLEAR-SCREEN
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
            DISPLAY 'OPCION NO ENCONTRADA'
-                                     LINE 12 POSITION 30
+                                         LINE 12 POSITION 30
            PERFORM 2020-OPCION
            PERFORM 3000-FINAL.
 
