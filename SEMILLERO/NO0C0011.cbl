@@ -45,26 +45,12 @@
            02 FILLER                  PIC A(49) VALUE 'VALOR DE CUOTA A 
       -      'PAGAR DEPENDIENDO DE UN PRODUCTO'.
            02 FILLER                  PIC X(15) VALUE ALL '-'.
+       01  WS-MENSAJE-ERROR           PIC X(255) VALUE SPACES.
 
       *----------------------------------------------------------------*
       * FECHA Y HORA DEL SISTEMA
       *----------------------------------------------------------------*
-       01  WS-FECHA-ACT               PIC 9(06) VALUE ZEROS.
-       01  WS-HORA-ACT                PIC 9(08) VALUE ZEROS.
-       01  WS-FECHA-SIS.
-           02 WS-DIA-SIS              PIC 9(02) VALUE ZEROS.
-           02 FILLER                  PIC X(01) VALUE '/'.
-           02 WS-MES-SIS              PIC 9(02) VALUE ZEROS.
-           02 FILLER                  PIC X(01) VALUE '/'.
-           02 WS-SIG-SIS              PIC 9(02) VALUE 20.
-           02 WS-ANO-SIS              PIC 9(02) VALUE ZEROS.
-
-       01  WS-HORA-SIS.
-           02 WS-HOR-SIS              PIC 9(02) VALUE ZEROS.
-           02 FILLER                  PIC X(01) VALUE ':'.
-           02 WS-MIN-SIS              PIC 9(02) VALUE ZEROS.
-           02 FILLER                  PIC X(01) VALUE ':'.
-           02 WS-SEG-SIS              PIC 9(02) VALUE ZEROS.
+       COPY './RUTINAS/VARFECHAS.CPY'.
 
       *----------------------------------------------------------------*
       * UTILIDADES
@@ -132,33 +118,22 @@
       *----------------------------------------------------------------*
        PROCEDURE DIVISION.
        1000-PRINCIPAL.
-       PERFORM 2001-FECHAS
-       PERFORM 2004-INFORMACION
-       PERFORM 2006-ACTIVAR-TASA-PRODUCTO
-       PERFORM 2009-HALLAR-SEXO
-       PERFORM 2008-HALLAR-DESCUENTOS
-       PERFORM 2007-HALLAR-INTERESES
-       PERFORM 2010-HALLAR-SEGURO-MENSUAL
-       PERFORM 2011-HALLAR-INTERESES-MENSUALES
-       PERFORM 2013-HALLAR-MENSUALES-TOTALES
-       PERFORM 2014-HALLAR-CAPITAL-MENSUAL
-       PERFORM 2015-HALLAR-CUOTA-MENSUAL
-       PERFORM 2012-HALLAR-TOTAL
-       PERFORM 2016-SALIDA
-       PERFORM 3000-FINAL.
+           PERFORM 2001-FECHAS
+           PERFORM 2004-INFORMACION
+           PERFORM 2007-HALLAR-INTERESES
+           PERFORM 2010-HALLAR-SEGURO-MENSUAL
+           PERFORM 2011-HALLAR-INTERESES-MENSUALES
+           PERFORM 2013-HALLAR-MENSUALES-TOTALES
+           PERFORM 2014-HALLAR-CAPITAL-MENSUAL
+           PERFORM 2015-HALLAR-CUOTA-MENSUAL
+           PERFORM 2012-HALLAR-TOTAL
+           PERFORM 2016-SALIDA
+           PERFORM 3000-FINAL.
 
       *----------------------------------------------------------------*
       * OBTENER LA FECHA Y LA HORA DEL SISTEMA
       *----------------------------------------------------------------*
-       2001-FECHAS.
-           ACCEPT WS-FECHA-ACT           FROM DATE 
-           MOVE WS-FECHA-ACT(5:2)        TO WS-DIA-SIS
-           MOVE WS-FECHA-ACT(3:2)        TO WS-MES-SIS
-           MOVE WS-FECHA-ACT(1:2)        TO WS-ANO-SIS
-           ACCEPT WS-HORA-ACT            FROM TIME
-           MOVE WS-HORA-ACT(1:2)         TO WS-HOR-SIS
-           MOVE WS-HORA-ACT(3:2)         TO WS-MIN-SIS
-           MOVE WS-HORA-ACT(5:2)         TO WS-SEG-SIS.
+       COPY './RUTINAS/PARFECHAS.CPY'.
 
        2002-PANTALLA-FECHAS.
            DISPLAY 'FEC SIS: '           LINE 01 POSITION 01
@@ -197,7 +172,8 @@
            DISPLAY '5) PRESTAMO PARA EDUCACION  - 19%, 07 ANOS'
                                          LINE 12 POSITION 01
            DISPLAY 'OPCION) '            LINE 13 POSITION 01
-           ACCEPT WS-PRODUCTO            LINE 13 POSITION 09.
+           ACCEPT WS-PRODUCTO            LINE 13 POSITION 09
+           PERFORM 2006-ACTIVAR-TASA-PRODUCTO.
 
        2005-02-CAPTURA-CAPITAL.
            DISPLAY 'INGRESE EL CAPITAL:' LINE 15 POSITION 01
@@ -206,7 +182,8 @@
 
        2005-03-CAPTURA-TIEMPO.
            DISPLAY 'TIEMPO EN ANOS:'     LINE 17 POSITION 01
-           ACCEPT WS-ANO-TOT             LINE 17 POSITION 21.
+           ACCEPT WS-ANO-TOT             LINE 17 POSITION 21
+           PERFORM 2006-EVALUAR-ANOS.
 
        2005-04-CAPTURA-SEXO.
            DISPLAY 'SELECCIONE SU GENERO:'
@@ -214,41 +191,67 @@
            DISPLAY 'H/h) HOMBRE - M/m) MUJER' 
                                          LINE 20 POSITION 01
            DISPLAY 'OPCION) '            LINE 21 POSITION 01
-           ACCEPT WS-GENERO              LINE 21 POSITION 09.
+           ACCEPT WS-GENERO              LINE 21 POSITION 09
+           PERFORM 2009-HALLAR-SEXO.
 
        2005-05-CAPTURA-HOGAR.
            DISPLAY 'CABEZA DE HOGAR? S-s) SI / N-n) NO: ' 
                                          LINE 23 POSITION 01
            DISPLAY 'OPCION) '            LINE 24 POSITION 01
-           ACCEPT WS-HOGAR               LINE 24 POSITION 09.
+           ACCEPT WS-HOGAR               LINE 24 POSITION 09
+           PERFORM 2008-HALLAR-DESCUENTOS.
+
+       2006-EVALUAR-ANOS.
+           EVALUATE  WS-PRODUCTO
+               WHEN 1
+                 IF WS-ANO-TOT <= 0 OR > 5 THEN
+                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO' 
+                   TO WS-MENSAJE-ERROR
+                   PERFORM 2017-OPCION-NO-ENCONTRADA
+               WHEN 2
+                 IF WS-ANO-TOT <= 0 OR > 20 THEN
+                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   TO WS-MENSAJE-ERROR
+                   PERFORM 2017-OPCION-NO-ENCONTRADA
+               WHEN 3
+                 IF WS-ANO-TOT <= 0 OR > 6 THEN
+                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   TO WS-MENSAJE-ERROR
+                   PERFORM 2017-OPCION-NO-ENCONTRADA
+               WHEN 4
+                 IF WS-ANO-TOT <= 0 OR > 5 THEN
+                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   TO WS-MENSAJE-ERROR
+                   PERFORM 2017-OPCION-NO-ENCONTRADA
+                WHEN 5
+                 IF WS-ANO-TOT <= 0 OR > 7 THEN
+                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   TO WS-MENSAJE-ERROR
+                   PERFORM 2017-OPCION-NO-ENCONTRADA
+           END-EVALUATE.
 
        2006-ACTIVAR-TASA-PRODUCTO.
-           IF WS-PRODUCTO = 1 THEN
-             SET WS-INT-TDC TO TRUE
-             SET WS-PRO-TDC TO TRUE
-           ELSE
-             IF WS-PRODUCTO = 2 THEN
-               SET WS-INT-HIP TO TRUE
-               SET WS-PRO-HIP TO TRUE
-             ELSE
-               IF WS-PRODUCTO = 3 THEN
+           EVALUATE WS-PRODUCTO
+               WHEN 1
+                 SET WS-INT-TDC TO TRUE
+                 SET WS-PRO-TDC TO TRUE
+               WHEN 2
+                 SET WS-INT-HIP TO TRUE
+                 SET WS-PRO-HIP TO TRUE
+               WHEN 3
                  SET WS-INT-VEH TO TRUE
                  SET WS-PRO-VEH TO TRUE
-               ELSE
-                IF WS-PRODUCTO = 4 THEN
-                  SET WS-INT-INV TO TRUE
-                  SET WS-PRO-INV TO TRUE
-                ELSE 
-                  IF WS-PRODUCTO = 5 THEN 
-                    SET WS-INT-EDU TO TRUE
-                    SET WS-PRO-EDU TO TRUE
-                  ELSE
-                    PERFORM 2017-OPCION-NO-ENCONTRADA
-                  END-IF
-                END-IF
-               END-IF
-             END-IF
-           END-IF.
+               WHEN 4
+                 SET WS-INT-INV TO TRUE
+                 SET WS-PRO-INV TO TRUE
+               WHEN 5
+                 SET WS-INT-EDU TO TRUE
+                 SET WS-PRO-EDU TO TRUE
+               WHEN OTHER
+                 MOVE 'ERROR EN PRODUCTO, INTENTE DE NUEVO'
+                 TO WS-MENSAJE-ERROR
+                 PERFORM 2017-OPCION-NO-ENCONTRADA
+           END-EVALUATE.
 
        2007-HALLAR-INTERESES.
           *>  INTERESES= TASA DE INTERES - DESCUENTOS
@@ -260,28 +263,38 @@
            END-SUBTRACT.
 
        2008-HALLAR-DESCUENTOS.
-           IF WS-HOGAR = 'S' OR 's' THEN
+           EVALUATE WS-HOGAR
+             WHEN 'S'
+             WHEN 's'
               MOVE 'SI' TO WS-HOGAR
               IF WS-GENERO = 'H' OR 'h' THEN
                 SET WS-DST-HOM TO TRUE
               ELSE
                 SET WS-DST-MUJ TO TRUE
               END-IF
-           ELSE
-                MOVE 'NO' TO WS-HOGAR
+             WHEN 'N'
+             WHEN 'n'
+               MOVE 'NO' TO WS-HOGAR
                 SET WS-DST-NO TO TRUE
-           END-IF.
+             WHEN OTHER
+               MOVE 'ERROR EN HOGAR, INTENTE DE NUEVO'
+               TO WS-MENSAJE-ERROR
+               PERFORM 2017-OPCION-NO-ENCONTRADA
+           END-EVALUATE.
 
        2009-HALLAR-SEXO.
-           IF WS-GENERO = 'H' OR 'h' THEN
+           EVALUATE WS-GENERO
+             WHEN 'H'
+             WHEN 'h'
                MOVE 'HOMBRE' TO WS-GEN-SEL
-           ELSE
-               IF WS-GENERO = 'M' OR 'm' THEN
-                   MOVE 'MUJER' TO WS-GEN-SEL
-               ELSE
-                   PERFORM 2017-OPCION-NO-ENCONTRADA
-               END-IF
-           END-IF.
+             WHEN 'M'
+             WHEN 'm'
+               MOVE 'MUJER' TO WS-GEN-SEL
+             WHEN OTHER
+               MOVE 'ERROR EN SEXO, INTENTE DE NUEVO'
+               TO WS-MENSAJE-ERROR
+               PERFORM 2017-OPCION-NO-ENCONTRADA
+           END-EVALUATE.
 
        2010-HALLAR-SEGURO-MENSUAL.
            COMPUTE WS-SEG-TOT ROUNDED = WS-CAPITAL * ( WS-SEGURO / 12 )
@@ -309,7 +322,7 @@
            END-COMPUTE.
 
        2014-HALLAR-CAPITAL-MENSUAL.
-      *    CAPITAL / MESES,      
+      *    CAPITAL / MESES
            MULTIPLY WS-ANO-TOT BY 12 GIVING WS-CUOTAS ROUNDED 
            END-MULTIPLY
            DIVIDE WS-CUOTAS INTO WS-CAPITAL GIVING WS-CAP-MES ROUNDED
@@ -424,8 +437,9 @@
            DISPLAY CLEAR-SCREEN
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
-           DISPLAY 'OPCION NO ENCONTRADA'
-                                         LINE 12 POSITION 30
+           DISPLAY 'ERROR: '
+                                         LINE 12 POSITION 01
+           DISPLAY WS-MENSAJE-ERROR      LINE 12 POSITION 08
            PERFORM 2018-OPCION
            PERFORM 3000-FINAL.
 
