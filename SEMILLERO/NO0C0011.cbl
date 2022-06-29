@@ -43,6 +43,23 @@
       *----------------------------------------------------------------*
       * MASCARAS
       *----------------------------------------------------------------*
+      * RECORDAR: MASCARAS QUE SE USAN NORMALMENTE, MULTIPLCIAR POR 100
+      * PARA MOSTRARLE AL USUARIO EL PORCENTAJE CORRECTO
+       01  WS-MAS-DINERO              PIC $$$,$$$,$$$,$$$,$$9.9(02). 
+       01  WS-MAS-INTERES             PIC Z9.99.
+
+      * ANOS 
+       01  WS-ANO-MAS                 PIC ZZ.
+
+       01  WS-SEG-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02). 
+       01  WS-CAPITAL-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-CUOTAS-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-MES-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-MAS-TOT                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-SEGURO-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-INTERES-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
+       01  WS-MAS-SEG                 PIC 9.9.
+       01  WS-MAS-INT                 PIC Z9.9(02).
 
       *----------------------------------------------------------------*
       * TITULO PANTALLA
@@ -85,15 +102,8 @@
        01  WS-SEGURO                  PIC 9V9(03) VALUE 0.015.
        01  WS-SEG-TOT                 PIC 9(15)V9(02) VALUE ZEROS.
 
-      * RECORDAR: MASCARAS QUE SE USAN NORMALMENTE, MULTIPLCIAR POR 100
-      * PARA MOSTRARLE AL USUARIO EL PORCENTAJE CORRECTO
-       01  WS-SEG-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02). 
-      *01 MASCARA-INTERES             PIC Z9.99 
-
        01  WS-SEGURO-PAN              PIC 99V99 VALUE ZEROS.
-       01  WS-MAS-SEG                 PIC 9.9.
 
-       01  WS-MAS-INT                 PIC Z9.9(02).
        01  WS-DESCUENTO               PIC 9V9(03) VALUE ZEROS.
            88 WS-DST-HOM              VALUE 0.015.
            88 WS-DST-MUJ              VALUE 0.020.
@@ -111,16 +121,6 @@
       *----------------------------------------------------------------*
       * PRODUCTOS
       *----------------------------------------------------------------*
-       01  WS-CAPITAL                 PIC 9(15)V9(02) VALUE ZEROS.
-       01  WS-CAP-MES                 PIC 9(15)V9(02) VALUE ZEROS.                 
-       01  WS-CAPITAL-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
-       01  WS-MAS-CAP                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
-
-       01  WS-ANO-MAS                 PIC ZZ.
-       01  WS-ANO-TOT                 PIC 9(02) VALUE ZEROS.
-       01  WS-CUOTAS                  PIC 9(03) VALUE ZEROS.
-       01  WS-CUOTAS-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
-
        01  WS-PRODUCTO                PIC 9(01) VALUE ZEROS.
        01  WS-PRO-SEL                 PIC X(24) VALUE SPACES.
            88 WS-PRO-TDC              VALUE 'TARJETA DE CREDITO'.
@@ -129,31 +129,25 @@
            88 WS-PRO-INV              VALUE 'PRESTAMO LIBRE INVERSION'.
            88 WS-PRO-EDU              VALUE 'PRESTAMO EDUCACION'.
 
+       01  WS-CAPITAL                 PIC 9(15)V9(02) VALUE ZEROS.
+       01  WS-CAP-MES                 PIC 9(15)V9(02) VALUE ZEROS.                 
+
+       01  WS-ANO-TOT                 PIC 9(02) VALUE ZEROS.
+       01  WS-CUOTAS                  PIC 9(03) VALUE ZEROS.
+
        01  WS-GENERO                  PIC A(01) VALUE SPACES.
        01  WS-GEN-SEL                 PIC A(06) VALUE SPACES.
 
        01  WS-HOGAR                   PIC A(02) VALUE SPACES.
 
        01  WS-MES-TOT                 PIC 9(15)V9(02) VALUE ZEROES.
-       01  WS-MES-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
 
-       01  WS-MAS-TOT                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-TOTAL                   PIC 9(15)V9(02) VALUE ZEROS.
 
-       01  WS-SEGURO-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-SEGURO-TOT              PIC 9(15)V9(02) VALUE ZEROS.
 
-       01  WS-INTERES-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-INTERES-TOT             PIC 9(15)V9(02) VALUE ZEROS.
 
-      * TECHO, ANOS BASE 
-       01  WS-ANOS-PROD               PIC 99 VALUE ZEROES.
-           88 WS-ANO-CRE              VALUE 05.
-           88 WS-ANO-HIP              VALUE 20.
-           88 WS-ANO-VEH              VALUE 06.
-           88 WS-ANO-INV              VALUE 05.
-           88 WS-ANO-EDU              VALUE 07.
-          
        01  WS-CUOTA-MEN               PIC 9(15)V9(02) VALUE ZEROS.
        
        SCREEN SECTION.
@@ -205,6 +199,7 @@
        2004-INFORMACION.
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
+
       * TIPO DE PRODUCTO     
            DISPLAY 'SELECCIONE UN PRODUCTO:'
                                          LINE 07 POSITION 01
@@ -219,15 +214,17 @@
            DISPLAY '5) PRESTAMO PARA EDUCACION  - 19%, 07 ANOS'
                                          LINE 12 POSITION 01
            DISPLAY 'OPCION) '            LINE 13 POSITION 01
-           ACCEPT WS-PRODUCTO            LINE 14 POSITION 09
+           ACCEPT WS-PRODUCTO            LINE 13 POSITION 09
+
       * CAPITAL
            DISPLAY 'INGRESE EL CAPITAL:' LINE 16 POSITION 01
            ACCEPT WS-CAPITAL             LINE 16 POSITION 21
            DIVIDE 100 INTO WS-CAPITAL    END-DIVIDE
-           MOVE WS-CAPITAL               TO WS-MAS-CAP
+
       * TIEMPO EN AÑOS
            DISPLAY 'TIEMPO EN ANOS:'     LINE 18 POSITION 01
            ACCEPT WS-ANO-TOT             LINE 18 POSITION 21
+
       * GENERO DEL USUARIO     
            DISPLAY 'SELECCIONE SU GENERO:'
                                          LINE 19 POSITION 01
@@ -235,6 +232,7 @@
                                          LINE 20 POSITION 01
            DISPLAY 'OPCION) '            LINE 21 POSITION 01
            ACCEPT WS-GENERO              LINE 21 POSITION 09.
+
       * CABEZA DE HOGAR
            DISPLAY 'CABEZA DE HOGAR? S-s) SI / N-n) NO: ' 
                                          LINE 23 POSITION 01
@@ -275,11 +273,12 @@
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR
                MULTIPLY 100 BY WS-INTERES GIVING WS-INTERES-PAN ROUNDED
-               MOVE WS-INTERES-PAN TO WS-MAS-INT
+               MOVE WS-INTERES-PAN TO WS-MAS-INTERES
            END-SUBTRACT.
 
        2008-HALLAR-DESCUENTOS.
            IF WS-HOGAR = 'S' OR 's' THEN
+              MOVE 'SI' TO WS-HOGAR
               IF WS-GENERO = 'H' OR 'h' THEN
                 MOVE 'HOMBRE' TO WS-GEN-SEL
                 SET WS-DST-HOM TO TRUE
@@ -288,6 +287,7 @@
                 SET WS-DST-MUJ TO TRUE
               END-IF
            ELSE
+                MOVE 'NO' TO WS-HOGAR
                 SET WS-DST-NO TO TRUE
            END-IF.
 
@@ -306,8 +306,8 @@
 
        2014-HALLAR-TOTAL.
            MULTIPLY WS-CUOTAS BY WS-CUOTA-MEN GIVING WS-TOTAL ROUNDED
-           MOVE WS-TOTAL TO WS-MAS-TOT
-           PERFORM 2020-OPCION.
+           END-MULTIPLY
+           MOVE WS-TOTAL TO WS-MAS-TOT.
 
        2015-HALLAR-MENSUALES-TOTALES.
            COMPUTE WS-SEGURO-TOT ROUNDED = WS-SEG-TOT * 
@@ -342,42 +342,71 @@
            DISPLAY CLEAR-SCREEN
            PERFORM 2002-PANTALLA-FECHAS
            PERFORM 2003-BANNER
+      * CAPITAL
            DISPLAY 'CAPITAL:'            LINE 07 POSITION 01 
-           DISPLAY WS-MAS-CAP            LINE 07 POSITION 25
+           MOVE WS-CAPITAL               TO WS-MAS-DINERO
+           DISPLAY WS-MAS-DINERO         LINE 07 POSITION 25
+
+      * ANOS 
            DISPLAY 'TIEMPO A PAGAR EN ANOS:' 
                                          LINE 08 POSITION 01
            MOVE WS-ANO-TOT TO WS-ANO-MAS
            DISPLAY WS-ANO-MAS            LINE 08 POSITION 25
+
+      * PRODUCTOS     
            DISPLAY 'PRODUCTO SELECCIONADO:'
                                          LINE 09 POSITION 01
            DISPLAY WS-PRO-SEL            LINE 09 POSITION 25
+
+      * GENERO
            DISPLAY 'GENERO:'             LINE 10 POSITION 01
            DISPLAY WS-GEN-SEL            LINE 10 POSITION 25
+
+      * CABEZA DE HOGAR 
            DISPLAY 'CABEZA DE HOGAR:'    LINE 11 POSITION 01
            DISPLAY WS-HOGAR              LINE 11 POSITION 25
+
+      * PORCENTAJE INTERES     
            DISPLAY 'PORCENTAJE INTERES:' LINE 12 POSITION 01
            DISPLAY '%'                   LINE 12 POSITION 30
-           DISPLAY WS-MAS-INT            LINE 12 POSITION 25
+           DISPLAY WS-MAS-INTERES        LINE 12 POSITION 25
+
+      * SEGURO
            DISPLAY 'SEGURO:'             LINE 13 POSITION 01
-           MULTIPLY 100 BY WS-SEGURO GIVING WS-SEGURO-PAN END-MULTIPly
+           MULTIPLY 100 BY WS-SEGURO GIVING WS-SEGURO-PAN END-MULTIPLY
            MOVE WS-SEGURO-PAN            TO WS-MAS-SEG
            DISPLAY WS-MAS-SEG            LINE 13 POSITION 25
            DISPLAY '%'                   LINE 13 POSITION 28
+
+      * RESULTADOS
+      * SEGURO MENSUAL
            DISPLAY 'RESULTADOS:'         LINE 15 POSITION 01
            DISPLAY 'SEGURO MENSUAL:'     LINE 16 POSITION 01
            DISPLAY WS-SEG-TOT-MAS        LINE 16 POSITION 25
+
+      * INTERES MENSUAL
            DISPLAY 'INTERES MENSUAL:'    LINE 17 POSITION 01
            DISPLAY WS-MES-TOT-MAS        LINE 17 POSITION 25
+
+      * CAPITAL MENSUAL     
            DISPLAY 'CAPITAL MENSUAL:'    LINE 18 POSITION 01
            DISPLAY WS-CAPITAL-MAS        LINE 18 POSITION 25
+
+      * VALOR TOTAL MENSUAL     
            DISPLAY 'VALOR MENSUAL: '     LINE 19 POSITION 01
            DISPLAY WS-CUOTAS-MAS         LINE 19 POSITION 25
+           
+      * VALOR SEGURO TOTAL     
            DISPLAY 'SEGURO TOTAL:'       LINE 21 POSITION 01
            DISPLAY WS-SEGURO-MAS         LINE 21 POSITION 25
+
+      * VALOR INTERES TOTAL
            DISPLAY 'INTERES TOTAL:'      LINE 22 POSITION 01
            DISPLAY WS-INTERES-MAS        LINE 22 POSITION 25
+
+      * TOTAL A PAGAR
            DISPLAY 'TOTAL A PAGAR:'      LINE 23 POSITION 01
-           DISPLAY WS-MAS-TOT            LINE 23 POSITION 30.
+           DISPLAY WS-MAS-TOT            LINE 23 POSITION 25.
 
        2009-OPCION-NO-ENCONTRADA.
            DISPLAY CLEAR-SCREEN
