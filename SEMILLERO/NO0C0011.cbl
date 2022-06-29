@@ -20,7 +20,7 @@
       * SALIDA:
       * [] INTERES MENSUAL [X] SEGURO MENSUAL [] TOTAL MENSUAL
       * [] TOTAL A PAGAR DURANTE EL TIEMPO
-      * INTERES, CAPITAL, SEGURO, total mensual
+      * INTERES, CAPITAL, SEGURO, total MENSUAL
       *----------------------------------------------------------------*
       *                           IDENTIFICATION                       *
       *----------------------------------------------------------------*
@@ -40,6 +40,10 @@
       *----------------------------------------------------------------*
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+      *----------------------------------------------------------------*
+      * MASCARAS
+      *----------------------------------------------------------------*
+
       *----------------------------------------------------------------*
       * TITULO PANTALLA
       *----------------------------------------------------------------*
@@ -81,18 +85,21 @@
        01  WS-SEGURO                  PIC 9V9(03) VALUE 0.015.
        01  WS-SEG-TOT                 PIC 9(15)V9(02) VALUE ZEROS.
 
-      * RECORDAR: MASCARAS QUE SE USAN NORMALMENTE 
+      * RECORDAR: MASCARAS QUE SE USAN NORMALMENTE, MULTIPLCIAR POR 100
+      * PARA MOSTRARLE AL USUARIO EL PORCENTAJE CORRECTO
        01  WS-SEG-TOT-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02). 
       *01 MASCARA-INTERES             PIC Z9.99 
 
-       01  WS-MAS-SEG                 PIC 9.9(03).
+       01  WS-SEGURO-PAN              PIC 99V99 VALUE ZEROS.
+       01  WS-MAS-SEG                 PIC 9.9.
 
-       01  WS-MAS-INT                 PIC Z9.9(03).
+       01  WS-MAS-INT                 PIC Z9.9(02).
        01  WS-DESCUENTO               PIC 9V9(03) VALUE ZEROS.
            88 WS-DST-HOM              VALUE 0.015.
            88 WS-DST-MUJ              VALUE 0.020.
            88 WS-DST-NO               VALUE 0.000.
 
+       01  WS-INTERES-PAN             PIC 99V99 VALUE ZEROS.
        01  WS-INTERES                 PIC 9V9(03) VALUE ZEROS.
       * HOMBRE O MUJER NO CABEZA DE HOGAR 
            88 WS-INT-TDC              VALUE 0.300.
@@ -109,6 +116,7 @@
        01  WS-CAPITAL-MAS             PIC $$$,$$$,$$$,$$$,$$9.9(02).
        01  WS-MAS-CAP                 PIC $$$,$$$,$$$,$$$,$$9.9(02).
 
+       01  WS-ANO-MAS                 PIC ZZ.
        01  WS-ANO-TOT                 PIC 9(02) VALUE ZEROS.
        01  WS-CUOTAS                  PIC 9(03) VALUE ZEROS.
        01  WS-CUOTAS-MAS              PIC $$$,$$$,$$$,$$$,$$9.9(02).
@@ -161,13 +169,12 @@
        PERFORM 2006-ACTIVAR-TASA-PRODUCTO.
        PERFORM 2008-HALLAR-DESCUENTOS
        PERFORM 2007-HALLAR-INTERESES
-       PERFORM 2010-HALLAR-HOGAR
        PERFORM 2011-HALLAR-SEGURO-MENSUAL
        PERFORM 2013-HALLAR-INTERESES-MENSUALES
-       PERFORM 2014-HALLAR-TOTAL
        PERFORM 2015-HALLAR-MENSUALES-TOTALES
        PERFORM 2016-HALLAR-CAPITAL-MENSUAL
        PERFORM 2017-HALLAR-CUOTA-MENSUAL
+       PERFORM 2014-HALLAR-TOTAL
        PERFORM 2019-SALIDA
        PERFORM 3000-FINAL.
 
@@ -264,53 +271,24 @@
 
        2007-HALLAR-INTERESES.
           *>  INTERESES= TASA DE INTERES - DESCUENTOS
-           SUBTRACT WS-DESCUENTO FROM WS-INTERES END-SUBTRACT.
+           SUBTRACT WS-DESCUENTO FROM WS-INTERES ROUNDED
+               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
+               NOT ON SIZE ERROR
+               MULTIPLY 100 BY WS-INTERES GIVING WS-INTERES-PAN ROUNDED
+               MOVE WS-INTERES-PAN TO WS-MAS-INT
+           END-SUBTRACT.
 
        2008-HALLAR-DESCUENTOS.
            IF WS-HOGAR = 'S' OR 's' THEN
               IF WS-GENERO = 'H' OR 'h' THEN
+                MOVE 'HOMBRE' TO WS-GEN-SEL
                 SET WS-DST-HOM TO TRUE
               ELSE
+                MOVE 'MUJER' TO WS-GEN-SEL
                 SET WS-DST-MUJ TO TRUE
               END-IF
            ELSE
                 SET WS-DST-NO TO TRUE
-           END-IF.
-
-       2009-HALLAR-PRODUCTO.
-           IF WS-PRODUCTO <= 0 OR > 5 
-             PERFORM 2009-OPCION-NO-ENCONTRADA
-           ELSE
-             IF WS-PRODUCTO = 1 THEN
-               SET WS-PRO-TDC TO TRUE
-             ELSE
-               IF WS-PRODUCTO = 2 THEN
-                  SET WS-PRO-HIP TO TRUE
-               ELSE
-                  IF WS-PRODUCTO = 3 THEN
-                    SET WS-PRO-VEH TO TRUE
-                  ELSE
-                     IF WS-PRODUCTO = 4 THEN
-                       SET WS-PRO-INV TO TRUE
-                     ELSE
-                       IF WS-PRODUCTO = 5 THEN
-                         SET WS-PRO-EDU TO TRUE
-                       END-IF
-                     END-IF
-                  END-IF
-               END-IF
-             END-IF
-           END-IF.
-
-       2010-HALLAR-HOGAR.
-           IF WS-HOGAR = 'S' OR 's' THEN
-               MOVE 'SI' TO WS-HOGAR
-           ELSE
-               IF WS-HOGAR = 'N' OR 'n' THEN
-                   MOVE 'NO' TO WS-HOGAR
-               ELSE
-                   PERFORM 2009-OPCION-NO-ENCONTRADA
-               END-IF
            END-IF.
 
        2011-HALLAR-SEGURO-MENSUAL.
@@ -327,12 +305,9 @@
            END-COMPUTE. 
 
        2014-HALLAR-TOTAL.
-           COMPUTE WS-TOTAL ROUNDED = WS-CAPITAL + 
-               (WS-SEG-TOT * (WS-ANO-TOT * 12)) +
-               (WS-MES-TOT * (WS-ANO-TOT * 12))
-               ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
-               NOT ON SIZE ERROR MOVE WS-TOTAL TO WS-MAS-TOT
-               END-COMPUTE.
+           MULTIPLY WS-CUOTAS BY WS-CUOTA-MEN GIVING WS-TOTAL ROUNDED
+           MOVE WS-TOTAL TO WS-MAS-TOT
+           PERFORM 2020-OPCION.
 
        2015-HALLAR-MENSUALES-TOTALES.
            COMPUTE WS-SEGURO-TOT ROUNDED = WS-SEG-TOT * 
@@ -350,7 +325,7 @@
       *    CAPITAL / MESES,      
            MULTIPLY WS-ANO-TOT BY 12 GIVING WS-CUOTAS ROUNDED 
            END-MULTIPLY
-           DIVIDE WS-CUOTAS INTO WS-CAPITAL GIVING WS-CAP-MES 
+           DIVIDE WS-CUOTAS INTO WS-CAPITAL GIVING WS-CAP-MES ROUNDED
                ON SIZE ERROR PERFORM 2009-OPCION-NO-ENCONTRADA
                NOT ON SIZE ERROR MOVE WS-CAP-MES TO WS-CAPITAL-MAS
            END-DIVIDE.
@@ -371,7 +346,8 @@
            DISPLAY WS-MAS-CAP            LINE 07 POSITION 25
            DISPLAY 'TIEMPO A PAGAR EN ANOS:' 
                                          LINE 08 POSITION 01
-           DISPLAY WS-ANO-TOT            LINE 08 POSITION 25
+           MOVE WS-ANO-TOT TO WS-ANO-MAS
+           DISPLAY WS-ANO-MAS            LINE 08 POSITION 25
            DISPLAY 'PRODUCTO SELECCIONADO:'
                                          LINE 09 POSITION 01
            DISPLAY WS-PRO-SEL            LINE 09 POSITION 25
@@ -380,12 +356,13 @@
            DISPLAY 'CABEZA DE HOGAR:'    LINE 11 POSITION 01
            DISPLAY WS-HOGAR              LINE 11 POSITION 25
            DISPLAY 'PORCENTAJE INTERES:' LINE 12 POSITION 01
-           DISPLAY '%'                   LINE 12 POSITION 31
+           DISPLAY '%'                   LINE 12 POSITION 30
            DISPLAY WS-MAS-INT            LINE 12 POSITION 25
            DISPLAY 'SEGURO:'             LINE 13 POSITION 01
-           MOVE WS-SEGURO                TO WS-MAS-SEG
+           MULTIPLY 100 BY WS-SEGURO GIVING WS-SEGURO-PAN END-MULTIPly
+           MOVE WS-SEGURO-PAN            TO WS-MAS-SEG
            DISPLAY WS-MAS-SEG            LINE 13 POSITION 25
-           DISPLAY '%'                   LINE 13 POSITION 30
+           DISPLAY '%'                   LINE 13 POSITION 28
            DISPLAY 'RESULTADOS:'         LINE 15 POSITION 01
            DISPLAY 'SEGURO MENSUAL:'     LINE 16 POSITION 01
            DISPLAY WS-SEG-TOT-MAS        LINE 16 POSITION 25
