@@ -3,6 +3,7 @@
       * Author: EDWIN PAEZ                                             *
       * Purpose: PRACTICE COBOL                                        *
       * TODO:                                                          *
+      * VALIDAR CON PERFORM UNTIL TODAS LAS SENTENCIAS
       ******************************************************************
       *----------------------------------------------------------------*
       *                           IDENTIFICATION                       *

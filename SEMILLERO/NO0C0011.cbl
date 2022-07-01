@@ -22,6 +22,7 @@
       *----------------------------------------------------------------*
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+
       *----------------------------------------------------------------*
       * MASCARAS
       *----------------------------------------------------------------*
@@ -71,6 +72,7 @@
            88 WS-DST-NO               VALUE 0.000.
 
        01  WS-INTERES-PAN             PIC 99V99 VALUE ZEROS.
+      * ASI VAN LOS PORCENTAJES DE INTERESES 
        01  WS-INTERES                 PIC 9V9(03) VALUE ZEROS.
            88 WS-INT-TDC              VALUE 0.300.
            88 WS-INT-HIP              VALUE 0.160.
@@ -96,7 +98,8 @@
        01  WS-CUOTAS                  PIC 9(03) VALUE ZEROS.
 
        01  WS-GENERO                  PIC A(01) VALUE SPACES.
-       01  WS-GEN-SEL                 PIC A(06) VALUE SPACES.
+       01  WS-GEN-SEL                 PIC A(23) VALUE SPACES
+                                      JUSTIFIED RIGHT.
 
        01  WS-HOGAR                   PIC A(02) VALUE SPACES.
 
@@ -109,6 +112,8 @@
        01  WS-INTERES-TOT             PIC 9(15)V9(02) VALUE ZEROS.
 
        01  WS-CUOTA-MEN               PIC 9(15)V9(02) VALUE ZEROS.
+
+       01  WS-VALIDADOR               PIC 9 VALUE ZEROS.
        
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -152,11 +157,14 @@
            PERFORM 2005-CAPTURA-CAMPOS.
 
        2005-CAPTURA-CAMPOS.
-           PERFORM 2005-01-CAPTURA-PRODUCTO
+           PERFORM 2005-01-CAPTURA-PRODUCTO UNTIL WS-VALIDADOR = 1
            PERFORM 2005-02-CAPTURA-CAPITAL
-           PERFORM 2005-03-CAPTURA-TIEMPO
-           PERFORM 2005-04-CAPTURA-SEXO
-           PERFORM 2005-05-CAPTURA-HOGAR.
+           MOVE 0 TO WS-VALIDADOR
+           PERFORM 2005-03-CAPTURA-TIEMPO UNTIL WS-VALIDADOR = 1
+           MOVE 0 TO WS-VALIDADOR
+           PERFORM 2005-04-CAPTURA-SEXO UNTIL WS-VALIDADOR = 1
+           MOVE 0 TO WS-VALIDADOR
+           PERFORM 2005-05-CAPTURA-HOGAR UNTIL WS-VALIDADOR = 1.
 
        2005-01-CAPTURA-PRODUCTO.
            DISPLAY 'SELECCIONE UN PRODUCTO:'
@@ -205,29 +213,44 @@
            EVALUATE  WS-PRODUCTO
                WHEN 1
                  IF WS-ANO-TOT <= 0 OR > 5 THEN
-                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO' 
+                   MOVE 'EN LOS ANOS, INTENTE DE NUEVO' 
                    TO WS-MENSAJE-ERROR
                    PERFORM 2017-OPCION-NO-ENCONTRADA
+                 ELSE
+                   MOVE 1 TO WS-VALIDADOR
+                 END-IF
                WHEN 2
                  IF WS-ANO-TOT <= 0 OR > 20 THEN
-                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   MOVE 'EN LOS ANOS, INTENTE DE NUEVO'
                    TO WS-MENSAJE-ERROR
                    PERFORM 2017-OPCION-NO-ENCONTRADA
+                 ELSE
+                   MOVE 1 TO WS-VALIDADOR
+                 END-IF
                WHEN 3
                  IF WS-ANO-TOT <= 0 OR > 6 THEN
-                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   MOVE 'EN LOS ANOS, INTENTE DE NUEVO'
                    TO WS-MENSAJE-ERROR
                    PERFORM 2017-OPCION-NO-ENCONTRADA
+                 ELSE
+                   MOVE 1 TO WS-VALIDADOR
+                 END-IF
                WHEN 4
                  IF WS-ANO-TOT <= 0 OR > 5 THEN
-                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   MOVE 'EN LOS ANOS, INTENTE DE NUEVO'
                    TO WS-MENSAJE-ERROR
                    PERFORM 2017-OPCION-NO-ENCONTRADA
+                 ELSE
+                   MOVE 1 TO WS-VALIDADOR
+                 END-IF
                 WHEN 5
                  IF WS-ANO-TOT <= 0 OR > 7 THEN
-                   MOVE 'ERROR EN LOS ANOS, INTENTE DE NUEVO'
+                   MOVE 'EN LOS ANOS, INTENTE DE NUEVO'
                    TO WS-MENSAJE-ERROR
                    PERFORM 2017-OPCION-NO-ENCONTRADA
+                 ELSE
+                   MOVE 1 TO WS-VALIDADOR
+                 END-IF
            END-EVALUATE.
 
        2006-ACTIVAR-TASA-PRODUCTO.
@@ -235,20 +258,25 @@
                WHEN 1
                  SET WS-INT-TDC TO TRUE
                  SET WS-PRO-TDC TO TRUE
+                 MOVE 1 TO WS-VALIDADOR
                WHEN 2
                  SET WS-INT-HIP TO TRUE
                  SET WS-PRO-HIP TO TRUE
+                 MOVE 1 TO WS-VALIDADOR
                WHEN 3
                  SET WS-INT-VEH TO TRUE
                  SET WS-PRO-VEH TO TRUE
+                 MOVE 1 TO WS-VALIDADOR
                WHEN 4
                  SET WS-INT-INV TO TRUE
                  SET WS-PRO-INV TO TRUE
+                 MOVE 1 TO WS-VALIDADOR
                WHEN 5
                  SET WS-INT-EDU TO TRUE
                  SET WS-PRO-EDU TO TRUE
+                 MOVE 1 TO WS-VALIDADOR
                WHEN OTHER
-                 MOVE 'ERROR EN PRODUCTO, INTENTE DE NUEVO'
+                 MOVE 'EN PRODUCTO, INTENTE DE NUEVO'
                  TO WS-MENSAJE-ERROR
                  PERFORM 2017-OPCION-NO-ENCONTRADA
            END-EVALUATE.
@@ -267,6 +295,7 @@
              WHEN 'S'
              WHEN 's'
               MOVE 'SI' TO WS-HOGAR
+              MOVE 1 TO WS-VALIDADOR
               IF WS-GENERO = 'H' OR 'h' THEN
                 SET WS-DST-HOM TO TRUE
               ELSE
@@ -274,10 +303,11 @@
               END-IF
              WHEN 'N'
              WHEN 'n'
+               MOVE 1 TO WS-VALIDADOR
                MOVE 'NO' TO WS-HOGAR
                 SET WS-DST-NO TO TRUE
              WHEN OTHER
-               MOVE 'ERROR EN HOGAR, INTENTE DE NUEVO'
+               MOVE 'EN HOGAR, INTENTE DE NUEVO'
                TO WS-MENSAJE-ERROR
                PERFORM 2017-OPCION-NO-ENCONTRADA
            END-EVALUATE.
@@ -287,11 +317,13 @@
              WHEN 'H'
              WHEN 'h'
                MOVE 'HOMBRE' TO WS-GEN-SEL
+               MOVE 1 TO WS-VALIDADOR
              WHEN 'M'
              WHEN 'm'
                MOVE 'MUJER' TO WS-GEN-SEL
+               MOVE 1 TO WS-VALIDADOR
              WHEN OTHER
-               MOVE 'ERROR EN SEXO, INTENTE DE NUEVO'
+               MOVE 'EN SEXO, INTENTE DE NUEVO'
                TO WS-MENSAJE-ERROR
                PERFORM 2017-OPCION-NO-ENCONTRADA
            END-EVALUATE.
@@ -401,7 +433,7 @@
       * INTERES MENSUAL
        2016-09-RESULTADO-INTERES-MEN.
            DISPLAY 'INTERES MENSUAL:'    LINE 17 POSITION 01
-           MOVE WS-MES-TOT              TO WS-MAS-DINERO
+           MOVE WS-MES-TOT               TO WS-MAS-DINERO
            DISPLAY WS-MAS-DINERO         LINE 17 POSITION 25.
 
       * CAPITAL MENSUAL     
@@ -416,7 +448,7 @@
            MOVE WS-CUOTA-MEN             TO WS-MAS-DINERO
            DISPLAY WS-MAS-DINERO         LINE 19 POSITION 25.
            
-      * VALOR SEGURO TOTAL     
+      * VALOR SEGURO TOTAL
        2016-12-RESULTADO-SEGURO-TOT.
            DISPLAY 'SEGURO TOTAL:'       LINE 21 POSITION 01
            MOVE  WS-SEGURO-TOT           TO WS-MAS-DINERO
@@ -434,19 +466,14 @@
            DISPLAY WS-MAS-DINERO         LINE 23 POSITION 25.
 
        2017-OPCION-NO-ENCONTRADA.
-           DISPLAY CLEAR-SCREEN
-           PERFORM 2002-PANTALLA-FECHAS
-           PERFORM 2003-BANNER
            DISPLAY 'ERROR: '
-                                         LINE 12 POSITION 01
-           DISPLAY WS-MENSAJE-ERROR      LINE 12 POSITION 08
-           PERFORM 2018-OPCION
-           PERFORM 3000-FINAL.
+                                         LINE 12 POSITION 50
+           DISPLAY WS-MENSAJE-ERROR      LINE 12 POSITION 57.
 
        2018-OPCION.
-           DISPLAY 'PRESIONE UNA TECLA PARA CONTINUAR'
-                                         LINE 24 POSITION 23
-           ACCEPT WS-OPCION              LINE 24 POSITION 57. 
+           DISPLAY 'PRESIONE UNA TECLA: '
+                                         LINE 14 POSITION 50
+           ACCEPT WS-OPCION              LINE 14 POSITION 70. 
 
        3000-FINAL.
            STOP RUN.
