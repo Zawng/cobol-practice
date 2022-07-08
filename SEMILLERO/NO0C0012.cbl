@@ -46,7 +46,6 @@
            88 WS-SI-HAY              VALUE 'S' 's'.
            88 WS-NO-HAY              VALUE 'N' 'n'.
 
-       01  WS-ENTER                  PIC A VALUE SPACES.
 
       *----------------------------------------------------------------*
       * PROCESOS / SALIDAS
@@ -214,6 +213,7 @@
        01  WS-ERROR                  PIC X(30) VALUE SPACES.
        01  WS-MENSAJE-ERROR          PIC X(60) VALUE SPACES.
        01  WS-BLANCOS                PIC X(80) VALUE SPACES.
+       01  WS-ENTER                  PIC A VALUE SPACES.
 
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.

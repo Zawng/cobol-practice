@@ -1,5 +1,4 @@
 
-
       ******************************************************************
       * Author: EDWIN PAEZ                                             *
       * Purpose: PRACTICE COBOL TABLES "OCCURS"                        *
@@ -7,7 +6,7 @@
       *                           IDENTIFICATION                       *
       *----------------------------------------------------------------*
        ID DIVISION.
-       PROGRAM-ID.                       BASE.
+       PROGRAM-ID.                       NO0C0013.
        AUTHOR.                           NOVATEC (EDWIN-PAEZ).
        INSTALLATION.                     BBVA.
        DATE-WRITTEN.                     07-JUL-22.
