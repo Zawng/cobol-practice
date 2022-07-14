@@ -1,15 +1,12 @@
-
-      ******************************************************************
-      * Author: EDWIN PAEZ                                             *
-      * Purpose: PRACTICE COBOL TABLES "OCCURS"                        *
       *----------------------------------------------------------------*
       *                           IDENTIFICATION                       *
+      * OBJETIVO: SIMULAR LOS MOVIMIENTOS DE UNA CAJA DE CAMBIO
       *----------------------------------------------------------------*
        ID DIVISION.
-       PROGRAM-ID.                       NO0C0013.
+       PROGRAM-ID.                       NO1CMONY.
        AUTHOR.                           NOVATEC (EDWIN-PAEZ).
        INSTALLATION.                     BBVA.
-       DATE-WRITTEN.                     07-JUL-22.
+       DATE-WRITTEN.                     13-JUL-22.
 
       *----------------------------------------------------------------*
       *                           ENVIRONMENT                          *
@@ -25,6 +22,25 @@
       * FECHA Y HORA DEL SISTEMA
       *----------------------------------------------------------------*
        COPY './RUTINAS/VARFECHAS.CPY'.
+
+      *----------------------------------------------------------------*
+      * ENTRADAS
+      *----------------------------------------------------------------*
+       01  WS-OPERA                  PIC A VALUE SPACES.
+           88 OPE-COMPRA             PIC 'C' 'c'.
+           88 OPE-VENTA              PIC 'V' 'v'.
+
+       01  WS-DIVISA                 PIC 9 VALUE ZEROS.
+           88 DOLAR                  VALUE 1.
+           88 EURO                   VALUE 2.
+           88 LIBRA                  VALUE 3.
+           88 YEN                    VALUE 4.
+           88 DOLCAN                 VALUE 5.
+
+       01  WS-CANTI                  PIC 9(5) VALUE ZEROS.
+       01  WS-FORPAG-COMPRAS         PIC 9 VALUE ZEROS.
+           88 
+
 
       *----------------------------------------------------------------*
       * UTILIDADES

@@ -1,13 +1,9 @@
-
-
-      ******************************************************************
-      * Author: EDWIN PAEZ                                             *
-      * Purpose: PRACTICE COBOL TABLES "OCCURS"                        *
       *----------------------------------------------------------------*
       *                           IDENTIFICATION                       *
+      * OBJETIVO: SIMULAR LOS MOVIMIENTOS DE UNA CAJA DE CAMBIO
       *----------------------------------------------------------------*
        ID DIVISION.
-       PROGRAM-ID.                       BASE.
+       PROGRAM-ID.                       NO1CMONY.
        AUTHOR.                           NOVATEC (EDWIN-PAEZ).
        INSTALLATION.                     BBVA.
        DATE-WRITTEN.                     07-JUL-22.
