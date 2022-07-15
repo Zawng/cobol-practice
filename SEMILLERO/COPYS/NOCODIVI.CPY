@@ -1,0 +1,8 @@
+       01  NOCODIVI.
+         02  CDIVI-ENTRADAS.
+           05 CDIVI-E-OPERA    PIC X.
+           05 CDIVI-E-DIVISA   PIC X(3).
+         02 CDIVI-SALIDAS.
+           05 CDIVI-S-VALDIVI PIC 9(05)V99.
+         02 CDIVI-RETORNO.
+           05 CDIVI-R-CODRETO PIC XX.

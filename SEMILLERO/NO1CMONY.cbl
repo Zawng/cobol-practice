@@ -41,13 +41,12 @@
        01  WS-FORPAG-VEN             PIC 9 VALUE ZEROS.
            88 EFECTI-VEN             VALUE 1.
            88 CHEQUE                 VALUE 2.
-           88 TRASFER                VALUE 3.
+           88 TRANSFER               VALUE 3.
 
        01  WS-REALIZA-OPE            PIC A VALUE SPACES.
            88 SI-REALIZA             VALUE 'S' 's'.
            88 NO-REALIZA             VALUE 'N' 'n'.
 
-       01  WS-OPC                    PIC 9 VALUE ZEROS.
 
       *----------------------------------------------------------------*
       *                           PROCESOS                             *
@@ -69,13 +68,40 @@
       *            (VENTAS:  1 EFECTIVO, 2 CHEQUE, 3 TRANSFERENCIA )
        01  F                         PIC 9 VALUE ZEROS.
 
+      * TABLA DE DIVISAS 
+       01  LISTA-DIVISAS.
+           02  FILLER PIC X(3) VALUE 'USD'.
+           02  FILLER PIC X(3) VALUE 'EUR'.
+           02  FILLER PIC X(3) VALUE 'GBP'.
+           02  FILLER PIC X(3) VALUE 'JPY'.
+           02  FILLER PIC X(3) VALUE 'CAD'.
+       01  TABLA-DIVISAS             REDEFINES LISTA-DIVISAS.
+           10 TAB-DIVI-SIG           OCCURS 5 TIMES PIC X(3).
+
+       01  WS-CORRECTO               PIC X VALUE SPACES.
+           88 SW-INCORRECTO          VALUE 'N'.
+           88 SW-CORRECTO            VALUE 'S'.
+
+       01  WS-VAL-OPE                PIC 9(12)V99 VALUE ZEROS.
+
       *----------------------------------------------------------------*
-      * UTILIDADES
+      * SALIDAS
       *----------------------------------------------------------------*
        01  WS-ENTER                  PIC A VALUE SPACES.
-       01  WS-ERROR                  PIC X(30) VALUE SPACES.
-       01  WS-MENSAJE-ERROR          PIC X(60) VALUE SPACES.
-       01  WS-BLANCOS                PIC X(80) VALUE SPACES.
+       01  WS-OPC                    PIC 9 VALUE ZEROS.
+       01  WS-OPC2                   PIC 9 VALUE ZEROS.
+       01  WS-ACUM-CANTI             PIC 9(7) VALUE ZEROS.
+       01  WS-ACUM-TOTDI             PIC 9(12)V99 VALUE ZEROS.
+       01  LI                        PIC 99 VALUE ZEROS.
+
+      *----------------------------------------------------------------*
+      * MASCARA
+      *----------------------------------------------------------------*
+       01  WS-MASCA-DIVI             PIC $$$,$$$.99.
+       01  WS-MASCA-OPER             PIC $$$$,$$$,$$$,$$$.99.
+       01  WS-MASCA-CANTI            PIC ZZZZ,ZZ9.99.
+
+       COPY './COPYS/NOCODIVI.CPY'.
 
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -102,7 +128,9 @@
            END-PERFORM
            EVALUATE WS-OPC
                WHEN 1 PERFORM 1-OPERACIONES
-               WHEN 2 PERFORM 2-CIERRE
+               WHEN 2 
+               MOVE 0 TO WS-OPC2
+               PERFORM 2-CIERRE
            END-EVALUATE.
 
        1-OPERACIONES.
@@ -112,9 +140,11 @@
            PERFORM 1-03-CANTIDAD
            PERFORM 1-04-FORMA-PAGO
            PERFORM 1-05-AVERIGUO-DIVISA
-           PERFORM 1-06-MOSTRAR-OPERACION
-           IF SI-REALIZA
-               PERFORM 1-07-GUARDAR-OPERACION.
+           IF SW-CORRECTO
+               PERFORM 1-06-MOSTRAR-OPERACION
+               IF SI-REALIZA
+                   PERFORM 1-07-GUARDAR-OPERACION
+               END-IF
            END-IF.
 
        1-01-OPERACION.
@@ -135,7 +165,7 @@
                    'QUE DIVISA DESEA?:'     LINE 10 POSITION 05
            MOVE ZEROS TO WS-DIVISA
            PERFORM UNTIL WS-DIVISA > 0 AND < 6
-               ACCEPT WS-OPERA              LINE 10 POSITION 25
+               ACCEPT WS-DIVISA             LINE 10 POSITION 25
            END-PERFORM.
 
        1-03-CANTIDAD. 
@@ -147,19 +177,248 @@
            END-PERFORM.
 
        1-04-FORMA-PAGO.
+               DISPLAY 'FORMAS DE PAGO'     LINE 14 POSITION 15
+               EVALUATE TRUE
+               WHEN OPE-COMPRA
+                   DISPLAY '1) EFECTIVO'       LINE 15 POSITION 05
+                           '2) DEBITO'         LINE 16 POSITION 05
+                           '3) CREDITO'        LINE 17 POSITION 05
+                           'OPCION: '       LINE 18 POSITION 05
+                   MOVE ZEROS TO WS-FORPAG-COM
+                   PERFORM UNTIL WS-FORPAG-COM > 0 AND < 4
+                       ACCEPT WS-FORPAG-COM LINE 18 POSITION 18
+                   END-PERFORM
+               WHEN OPE-VENTA
+                   DISPLAY '1) EFECTIVO'       LINE 15 POSITION 05
+                           '2) CHEQUE'         LINE 16 POSITION 05
+                           '3) TRANSFERENCIA'  LINE 17 POSITION 05
+                           'OPCION: '       LINE 18 POSITION 05
+                   MOVE ZEROS TO WS-FORPAG-VEN
+                   PERFORM UNTIL WS-FORPAG-VEN > 0 AND < 4
+                       ACCEPT WS-FORPAG-VEN LINE 18 POSITION 18
+                   END-PERFORM
+           END-EVALUATE.
 
-       999-ENTER.
-           DISPLAY ' <OPRIMA ENTER> '       LINE 24 POSITION 33
-           ACCEPT WS-ENTER                  LINE 24 POSITION 50.
+       1-05-AVERIGUO-DIVISA.
+           INITIALIZE NOCODIVI
+           SET SW-INCORRECTO TO TRUE
+           EVALUATE TRUE
+               WHEN OPE-COMPRA
+                   MOVE 'C' TO CDIVI-E-OPERA
+               WHEN OPE-VENTA
+                   MOVE 'V' TO CDIVI-E-OPERA
+           END-EVALUATE
+           MOVE TAB-DIVI-SIG(WS-DIVISA) TO CDIVI-E-DIVISA
+          *>  CALL './RUTINAS/NO6CDIVI.cbl' USING NOCODIVI
+           MOVE '00' TO CDIVI-RETORNO
+           MOVE 5000 TO CDIVI-S-VALDIVI
+           EVALUATE CDIVI-RETORNO
+               WHEN '00' SET SW-CORRECTO TO TRUE
+               WHEN '01' DISPLAY 'OPERACION NO INFORMADA'
+                                            LINE 24 POSITION 25   
+                   ACCEPT WS-ENTER          LINE 24 POSITION 60
+               WHEN '02' DISPLAY 'DIVISA NO INFORMADA'
+                                            LINE 24 POSITION 25   
+                   ACCEPT WS-ENTER          LINE 24 POSITION 60
+           END-EVALUATE.
 
-       999-MENSAJE-ERROR.
-           STRING 'ERROR EN TAMANO EN LA VARIABLE : '
-               WS-ERROR DELIMITED BY SIZE
-               INTO WS-MENSAJE-ERROR
-           END-STRING
-           DISPLAY WS-MENSAJE-ERROR         LINE 24 POSITION 05
-           ACCEPT WS-ENTER                  LINE 24 POSITION 67
-           DISPLAY WS-BLANCOS               LINE 24 POSITION 01.
+       1-06-MOSTRAR-OPERACION.
+           MOVE CDIVI-S-VALDIVI             TO WS-MASCA-DIVI
+           DISPLAY 'EL VALOR DE LA DIVISA ES:' 
+                                            LINE 19 POSITION 05
+                   WS-MASCA-DIVI            LINE 19 POSITION 50
+           MULTIPLY WS-CANTI BY CDIVI-S-VALDIVI GIVING WS-VAL-OPE 
+                    ROUNDED
+           MOVE WS-VAL-OPE TO WS-MASCA-OPER
+           DISPLAY 'TOTAL A PAGAR:'         LINE 20 POSITION 30
+                   WS-MASCA-OPER            LINE 20 POSITION 50
+                   'REALIZA LA OPERACION (S/N)::'
+                                            LINE 22 POSITION 35
+           MOVE SPACES TO WS-REALIZA-OPE
+           PERFORM UNTIL SI-REALIZA OR NO-REALIZA
+               ACCEPT WS-REALIZA-OPE        LINE 22 POSITION 65
+           END-PERFORM.
+
+       1-07-GUARDAR-OPERACION.
+           EVALUATE TRUE
+               WHEN OPE-COMPRA
+                   MOVE 1             TO O
+                   MOVE WS-FORPAG-COM TO F
+               WHEN OPE-VENTA
+                   MOVE 2             TO O
+                   MOVE WS-FORPAG-VEN TO F
+           END-EVALUATE
+           MOVE WS-DIVISA             TO D
+           ADD WS-CANTI               TO TAB-CANTIDA(O D F)
+           MOVE CDIVI-S-VALDIVI       TO TAB-VALDIVI(O D F)
+           ADD WS-VAL-OPE             to TAB-TOTDIVI(O D F).
+
+       2-CIERRE.
+           PERFORM 2-01-MENU-CIERRE UNTIL WS-OPC2 = 3.
+
+       2-01-MENU-CIERRE.
+           DISPLAY CLEAR-SCREEN
+
+           DISPLAY 'CASA DE CAMBIO MONEY'   LINE 02 POSITION 29
+                   'MENU DEL CIERRE DIARIO' LINE 05 POSITION 33
+                   '1. COMPRAS Y VENTAS POR DIVISAS'
+                                            LINE 07 POSITION 33
+                   '2. FORMAS DE PAGO'      LINE 09 POSITION 33
+                   '3. SALIR'               LINE 11 POSITION 33
+                   'QUE OPCION DESEA?: '    LINE 13 POSITION 36
+           MOVE ZEROS TO WS-OPC2
+           PERFORM UNTIL WS-OPC2 > 0 AND < 4
+               ACCEPT WS-OPC2 LINE 13 POSITION 56
+           END-PERFORM
+           EVALUATE WS-OPC2
+               WHEN 1 PERFORM 02-01-01-COMPRA-VENTA
+               WHEN 2 PERFORM 02-01-02-FORMAS-PAGO
+           END-EVALUATE.
+
+       02-01-01-COMPRA-VENTA.
+           PERFORM 02-01-01-1-COMPRAS
+           PERFORM 02-01-01-2-VENTAS
+           DISPLAY 'OPRIMA ENTER PARA CONTINUAR' 
+                                            LINE 24 POSITION 30
+           ACCEPT WS-ENTER                  LINE 24 POSITION 65.
+
+       02-01-01-1-COMPRAS.
+           DISPLAY CLEAR-SCREEN
+           DISPLAY 'COMPRAS'                LINE 03 POSITION 05 
+                   'CANTIDAD        VALOR DIVISA     VALOR TOTAL'
+                                            LINE 04 POSITION 12
+                   'DOLARES  '              LINE 05 POSITION 01
+                   'EUROS    '              LINE 06 POSITION 01
+                   'LIBRAS   '              LINE 07 POSITION 01
+                   'YENES    '              LINE 08 POSITION 01
+                   'DOL. CANA'              LINE 09 POSITION 01
+           MOVE 1 TO O
+           MOVE 5 TO LI
+           PERFORM VARYING D FROM 1 BY 1 UNTIL D > 5
+               AFTER F FROM 1 BY 1 UNTIL F > 3
+                   ADD TAB-CANTIDA(O D F) TO WS-ACUM-CANTI
+                   ADD TAB-TOTDIVI(O D F) TO WS-ACUM-TOTDI
+                   EVALUATE D ALSO F
+                    WHEN 1 ALSO 3
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 2 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 3 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 4 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 5 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                   END-EVALUATE
+           END-PERFORM.
+
+       02-01-01-2-VENTAS.
+           DISPLAY 'VENTAS'                LINE 12 POSITION 05 
+                   'CANTIDAD        VALOR DIVISA     VALOR TOTAL'
+                                            LINE 13 POSITION 12
+                   'DOLARES  '              LINE 14 POSITION 01
+                   'EUROS    '              LINE 15 POSITION 01
+                   'LIBRAS   '              LINE 16 POSITION 01
+                   'YENES    '              LINE 17 POSITION 01
+                   'DOL. CANA'              LINE 18 POSITION 01
+           MOVE 2 TO O
+           MOVE 14 TO LI
+           PERFORM VARYING D FROM 1 BY 1 UNTIL D > 5
+               AFTER F FROM 1 BY 1 UNTIL F > 3
+                   ADD TAB-CANTIDA(O D F) TO WS-ACUM-CANTI
+                   ADD TAB-TOTDIVI(O D F) TO WS-ACUM-TOTDI
+                   EVALUATE D ALSO F
+                    WHEN 1 ALSO 3
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 2 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 3 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 4 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                    WHEN 5 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN
+                   END-EVALUATE
+           END-PERFORM.
+
+       02-01-01-1-MOSTRAR-PAN.
+          MOVE WS-ACUM-CANTI TO WS-MASCA-CANTI
+          DISPLAY WS-MASCA-CANTI 
+                                LINE LI POSITION 16
+          MOVE TAB-VALDIVI(O D 3) TO WS-MASCA-DIVI
+          DISPLAY WS-MASCA-DIVI LINE LI POSITION 33
+          MOVE WS-ACUM-TOTDI TO WS-MASCA-OPER
+          DISPLAY WS-MASCA-OPER LINE LI POSITION 56
+          MOVE ZEROS TO WS-ACUM-CANTI WS-ACUM-TOTDI. 
+                           
+       02-01-02-FORMAS-PAGO.
+           DISPLAY CLEAR-SCREEN
+           DISPLAY 'FORMAS DE PAGO'         line 03 position 05
+                    'COMPRAS'               LINE 04 POSITION 05
+                    'CANTIDAD        VALOR TOTAL'
+                                            LINE 05 POSITION 12
+                    'EFECTIVO'              LINE 06 POSITION 01
+                    'DEBITO  '              LINE 07 POSITION 01
+                    'CREDITO '              LINE 08 POSITION 01
+           MOVE 1 TO O
+           MOVE 06 TO LI
+           PERFORM VARYING F FROM 1 BY 1 UNTIL F > 3
+               AFTER D FROM 1 BY 1 UNTIL D > 5
+                   ADD TAB-CANTIDA(O D F) TO WS-ACUM-CANTI
+                   ADD TAB-TOTDIVI(O D F) TO WS-ACUM-TOTDI
+                   EVALUATE D ALSO F
+                    WHEN 5 ALSO 1
+                      PERFORM 02-01-01-1-MOSTRAR-PAN2
+                    WHEN 5 ALSO 2
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN2
+                    WHEN 5 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN2
+                   END-EVALUATE
+           END-PERFORM
+           DISPLAY 'VENTAS'                 LINE 11 POSITION 05
+                    'CANTIDAD        VALOR TOTAL'
+                                            LINE 13 POSITION 12
+                    'EFECTIVO'              LINE 14 POSITION 01
+                    'CHEQUES '              LINE 15 POSITION 01
+                    'TRASNFER'              LINE 16 POSITION 01
+           MOVE 2 TO O
+           MOVE 14 TO LI
+           PERFORM VARYING F FROM 1 BY 1 UNTIL F > 3
+               AFTER D FROM 1 BY 1 UNTIL D > 5
+                   ADD TAB-CANTIDA(O D F) TO WS-ACUM-CANTI
+                   ADD TAB-TOTDIVI(O D F) TO WS-ACUM-TOTDI
+                   EVALUATE D ALSO F
+                    WHEN 5 ALSO 1
+                      PERFORM 02-01-01-1-MOSTRAR-PAN2
+                    WHEN 5 ALSO 2
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN2
+                    WHEN 5 ALSO 3
+                      ADD 1 TO LI
+                      PERFORM 02-01-01-1-MOSTRAR-PAN2
+                   END-EVALUATE
+           END-PERFORM
+           DISPLAY 'OPRIMA ENTER PARA CONTINUAR' 
+                                            LINE 24 POSITION 30
+           ACCEPT WS-ENTER                  LINE 24 POSITION 65.
+                  
+       02-01-01-1-MOSTRAR-PAN2.
+           MOVE WS-ACUM-CANTI TO WS-MASCA-CANTI
+           DISPLAY WS-MASCA-CANTI 
+                                LINE LI POSITION 16
+           MOVE WS-ACUM-TOTDI TO WS-MASCA-OPER
+           DISPLAY WS-MASCA-OPER LINE LI POSITION 33
+           MOVE ZEROS TO WS-ACUM-CANTI WS-ACUM-TOTDI. 
 
        3000-FINAL.
            STOP RUN.
