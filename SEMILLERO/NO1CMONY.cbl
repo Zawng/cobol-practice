@@ -47,7 +47,6 @@
            88 SI-REALIZA             VALUE 'S' 's'.
            88 NO-REALIZA             VALUE 'N' 'n'.
 
-
       *----------------------------------------------------------------*
       *                           PROCESOS                             *
       *----------------------------------------------------------------*
@@ -93,6 +92,7 @@
        01  WS-ACUM-CANTI             PIC 9(7) VALUE ZEROS.
        01  WS-ACUM-TOTDI             PIC 9(12)V99 VALUE ZEROS.
        01  LI                        PIC 99 VALUE ZEROS.
+       01  WS-VALI-DIVIS             PIC 9(5)V99 VALUE ZEROS.
 
       *----------------------------------------------------------------*
       * MASCARA
@@ -298,6 +298,9 @@
                AFTER F FROM 1 BY 1 UNTIL F > 3
                    ADD TAB-CANTIDA(O D F) TO WS-ACUM-CANTI
                    ADD TAB-TOTDIVI(O D F) TO WS-ACUM-TOTDI
+                   IF WS-VALI-DIVIS = ZEROS
+                       MOVE TAB-VALDIVI(O D F) TO WS-VALI-DIVIS
+                   END-IF
                    EVALUATE D ALSO F
                     WHEN 1 ALSO 3
                       PERFORM 02-01-01-1-MOSTRAR-PAN
@@ -353,11 +356,11 @@
           MOVE WS-ACUM-CANTI TO WS-MASCA-CANTI
           DISPLAY WS-MASCA-CANTI 
                                 LINE LI POSITION 16
-          MOVE TAB-VALDIVI(O D 3) TO WS-MASCA-DIVI
+          MOVE WS-VALI-DIVIS TO WS-MASCA-DIVI
           DISPLAY WS-MASCA-DIVI LINE LI POSITION 33
           MOVE WS-ACUM-TOTDI TO WS-MASCA-OPER
           DISPLAY WS-MASCA-OPER LINE LI POSITION 56
-          MOVE ZEROS TO WS-ACUM-CANTI WS-ACUM-TOTDI. 
+          MOVE ZEROS TO WS-ACUM-CANTI WS-ACUM-TOTDI WS-VALI-DIVIS. 
                            
        02-01-02-FORMAS-PAGO.
            DISPLAY CLEAR-SCREEN

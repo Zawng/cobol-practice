@@ -90,29 +90,19 @@
            88 WS-PRO-VEH              VALUE 'PRESTAMO VEHICULO'.
            88 WS-PRO-INV              VALUE 'PRESTAMO LIBRE INVERSION'.
            88 WS-PRO-EDU              VALUE 'PRESTAMO EDUCACION'.
-
        01  WS-CAPITAL                 PIC 9(15)V9(02) VALUE ZEROS.
        01  WS-CAP-MES                 PIC 9(15)V9(02) VALUE ZEROS.                 
-
        01  WS-ANO-TOT                 PIC 9(02) VALUE ZEROS.
        01  WS-CUOTAS                  PIC 9(03) VALUE ZEROS.
-
        01  WS-GENERO                  PIC A(01) VALUE SPACES.
        01  WS-GEN-SEL                 PIC A(23) VALUE SPACES
                                       JUSTIFIED RIGHT.
-
        01  WS-HOGAR                   PIC A(02) VALUE SPACES.
-
        01  WS-MES-TOT                 PIC 9(15)V9(02) VALUE ZEROES.
-
        01  WS-TOTAL                   PIC 9(15)V9(02) VALUE ZEROS.
-
        01  WS-SEGURO-TOT              PIC 9(15)V9(02) VALUE ZEROS.
-
        01  WS-INTERES-TOT             PIC 9(15)V9(02) VALUE ZEROS.
-
        01  WS-CUOTA-MEN               PIC 9(15)V9(02) VALUE ZEROS.
-
        01  WS-VALIDADOR               PIC 9 VALUE ZEROS.
        
        SCREEN SECTION.
