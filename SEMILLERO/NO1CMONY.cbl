@@ -46,7 +46,9 @@
        01  WS-REALIZA-OPE            PIC A VALUE SPACES.
            88 SI-REALIZA             VALUE 'S' 's'.
            88 NO-REALIZA             VALUE 'N' 'n'.
-
+           
+       01  RUT-NO6CDIVI              PIC X(08) VALUE 
+                                     'NO6CDIVI'.
       *----------------------------------------------------------------*
       *                           PROCESOS                             *
       *----------------------------------------------------------------*
@@ -209,15 +211,14 @@
                    MOVE 'V' TO CDIVI-E-OPERA
            END-EVALUATE
            MOVE TAB-DIVI-SIG(WS-DIVISA) TO CDIVI-E-DIVISA
-          *>  CALL './RUTINAS/NO6CDIVI.cbl' USING NOCODIVI
-           MOVE '00' TO CDIVI-RETORNO
-           MOVE 5000 TO CDIVI-S-VALDIVI
-           EVALUATE CDIVI-RETORNO
+      *    CALL './RUTINAS/NO6CDIVI.cbl' USING NOCODIVI
+           CALL RUT-NO6CDIVI USING NOCODIVI
+           EVALUATE CDIVI-R-CODRETO
                WHEN '00' SET SW-CORRECTO TO TRUE
-               WHEN '01' DISPLAY 'OPERACION NO INFORMADA'
-                                            LINE 24 POSITION 25   
+               WHEN '01' DISPLAY 'ERROR, OPERACION NO INFORMADA O INEXIS
+      -             'TENTE'                 LINE 24 POSITION 25   
                    ACCEPT WS-ENTER          LINE 24 POSITION 60
-               WHEN '02' DISPLAY 'DIVISA NO INFORMADA'
+               WHEN '02' DISPLAY 'DIVISA NO INFORMADA O INEXISTENTE'
                                             LINE 24 POSITION 25   
                    ACCEPT WS-ENTER          LINE 24 POSITION 60
            END-EVALUATE.
@@ -334,6 +335,9 @@
                AFTER F FROM 1 BY 1 UNTIL F > 3
                    ADD TAB-CANTIDA(O D F) TO WS-ACUM-CANTI
                    ADD TAB-TOTDIVI(O D F) TO WS-ACUM-TOTDI
+                   IF WS-VALI-DIVIS = ZEROS
+                       MOVE TAB-VALDIVI(O D F) TO WS-VALI-DIVIS
+                   END-IF
                    EVALUATE D ALSO F
                     WHEN 1 ALSO 3
                       PERFORM 02-01-01-1-MOSTRAR-PAN

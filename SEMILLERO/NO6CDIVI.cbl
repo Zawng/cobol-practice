@@ -31,12 +31,12 @@
        01  TABLA-VAL-DIVISAS         REDEFINES VALOR-DIVISAS-TRM.
            02 TAB-DIV-VAL            OCCURS 5 TIMES PIC 9(5)V99.
        01  WS-DIVISAS-OK             PIC X(3) VALUE SPACES.
-           02 DIVI-OK                VALUES ARE 'USD' 'EUR' 'GBP' 
+           88 DIVI-OK                VALUES ARE 'USD' 'EUR' 'GBP' 
                                                 'JPY' 'CAD'.
        01  WS-D                      PIC 9 VALUE ZEROS.
 
        LINKAGE SECTION.
-       COPY '../COPYS/NOCODIVI.CPY'.
+       COPY './COPYS/NOCODIVI.CPY'.
 
       *----------------------------------------------------------------*
       *                           PROCEDURE                            *
@@ -47,7 +47,7 @@
            IF SW-CORRECTO
                PERFORM 02-CALCULAR-DIVISA
            END-IF 
-           RETURN.
+           EXIT PROGRAM.
 
        01-VALIDA-PARAMETROS-ENTRADA.
       * VALIDAR SI LA OPERACION ES VALIDA 
@@ -77,10 +77,10 @@
 
            EVALUATE CDIVI-E-OPERA
              WHEN 'C'
-               COMPUTE CDIVI-S-VALDIVI = TAB-DIVI-VAL(WS-D) - 
-                       (TAB-DIVI-VAL(WS-D) * 0.02)
+               COMPUTE CDIVI-S-VALDIVI = TAB-DIV-VAL(WS-D) - 
+                       (TAB-DIV-VAL(WS-D) * 0.02)
              WHEN 'V'
-               COMPUTE CDIVI-S-VALDIVI = TAB-DIVI-VAL(WS-D) + 
-                       (TAB-DIVI-VAL(WS-D) * 0.04)
+               COMPUTE CDIVI-S-VALDIVI = TAB-DIV-VAL(WS-D) + 
+                       (TAB-DIV-VAL(WS-D) * 0.04)
            END-EVALUATE
            MOVE '00' TO CDIVI-R-CODRETO.
