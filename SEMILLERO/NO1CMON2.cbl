@@ -105,6 +105,10 @@
 
        COPY './COPYS/NOCODIVI.CPY'.
 
+      * RUTINA DE FECHAS
+       COPY './COPYS/VARFECHAS.CPY'.
+       01  RUT-FECHAS                PIC X(08) VALUE 'NO6CFECH'. 
+
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
 
@@ -113,11 +117,27 @@
       *----------------------------------------------------------------*
        PROCEDURE DIVISION.
        1000-PRINCIPAL.
+           INITIALIZE WS-FECHAS
+           MOVE 7 TO WS-FORMATO
            PERFORM MENU-PRINCIPAL UNTIL WS-OPC = 3
            PERFORM 3000-FINAL.
 
+       999-FECHAS.
+           CALL RUT-FECHAS USING WS-FECHAS
+           EVALUATE WS-RETORNO-FECHA
+             WHEN '00' 
+               DISPLAY 'FECHA DEL SISTEMA: '   LINE 01 POSITION 01
+               DISPLAY WS-FORMATO-FECHA        LINE 01 POSITION 20
+               DISPLAY 'HORA DEL SISTEMA: '    LINE 01 POSITION 54
+               DISPLAY WS-FORMATO-HORA         LINE 01 POSITION 72
+             WHEN '01'
+               DISPLAY 'ERROR, FORMATO NO VALIDO'
+                                            LINE 01 POSITION 01
+           END-EVALUATE.
+
        MENU-PRINCIPAL.
            DISPLAY CLEAR-SCREEN
+           PERFORM 999-FECHAS
            DISPLAY 'CASA DE CAMBIO MONEY'   LINE 02 POSITION 29
                    'MENU PRINCIPAL'         LINE 05 POSITION 33
                    '1. OPERACIONES'         LINE 07 POSITION 33
