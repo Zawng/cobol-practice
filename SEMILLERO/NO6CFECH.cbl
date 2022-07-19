@@ -87,13 +87,13 @@
        INICIO.
            PERFORM 01-VALIDA-PARAMETROS-ENTRADA
            IF SW-CORRECTO
+               PERFORM 999-HORAS
                PERFORM 02-HALLAR-FORMATO
            END-IF 
            EXIT PROGRAM.
 
        01-VALIDA-PARAMETROS-ENTRADA.
            IF WS-FORMATO > 0 AND < 9 THEN
-               PERFORM 999-HORAS
                SET SW-CORRECTO TO TRUE
            ELSE
                MOVE '01' TO WS-RETORNO-FECHA
@@ -102,12 +102,12 @@
 
        02-HALLAR-FORMATO.
            EVALUATE WS-FORMATO
-             WHEN 1 PERFORM 02-01-FORMATO
-             WHEN 2 PERFORM 02-02-FORMATO
-             WHEN 3 PERFORM 02-03-FORMATO
-             WHEN 4 PERFORM 02-04-FORMATO
-             WHEN 5 PERFORM 02-05-FORMATO
-             WHEN 6 PERFORM 02-06-FORMATO
+             WHEN 1 
+             WHEN 2 PERFORM 02-01-FORMATO
+             WHEN 3 
+             WHEN 4 PERFORM 02-03-FORMATO
+             WHEN 5 
+             WHEN 6 PERFORM 02-05-FORMATO
              WHEN 7
              WHEN 8 PERFORM 02-07-FORMATO
            END-EVALUATE
@@ -116,17 +116,16 @@
       * 1) DDMMAA:
        02-01-FORMATO.
            ACCEPT WS-FECHA-ACT           FROM DATE
-           MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(5:2)
-           MOVE WS-FECHA-ACT(3:2)        TO WS-FORMATO-FECHA(3:2)
-           MOVE WS-FECHA-ACT(5:2)        TO WS-FORMATO-FECHA(1:2).
-
-      * DATE: AAMMDD
-       02-02-FORMATO.
-           ACCEPT WS-FECHA-ACT           FROM DATE
            MOVE WS-FECHA-ACT(5:2)        TO WS-FORMATO-FECHA(1:2)
            MOVE WS-FECHA-ACT(3:2)        TO WS-FORMATO-FECHA(3:2)
-           MOVE 20                       TO WS-FORMATO-FECHA(5:2)
-           MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(7:2).
+           IF WS-FORMATO = 1 THEN 
+               MOVE WS-FECHA-ACT(1:2)    TO WS-FORMATO-FECHA(5:2)
+           ELSE
+               IF WS-FORMATO = 2 THEN
+                   MOVE 20               TO WS-FORMATO-FECHA(5:2)
+                   MOVE WS-FECHA-ACT(1:2) TO WS-FORMATO-FECHA(7:2)
+               END-IF
+           END-IF.
 
        02-03-FORMATO.
            ACCEPT WS-FECHA-ACT           FROM DATE
@@ -134,16 +133,12 @@
            MOVE '-'                      TO WS-FORMATO-FECHA(3:1)
            MOVE WS-FECHA-ACT(3:2)        TO WS-FORMATO-FECHA(4:2)
            MOVE '-'                      TO WS-FORMATO-FECHA(6:1)
-           MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(7:2).
-
-       02-04-FORMATO.
-           ACCEPT WS-FECHA-ACT           FROM DATE
-           MOVE WS-FECHA-ACT(5:2)        TO WS-FORMATO-FECHA(1:2)
-           MOVE '-'                      TO WS-FORMATO-FECHA(3:1)
-           MOVE WS-FECHA-ACT(3:2)        TO WS-FORMATO-FECHA(4:2)
-           MOVE '-'                      TO WS-FORMATO-FECHA(6:1)
-           MOVE 20                       TO WS-FORMATO-FECHA(7:2)
-           MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(9:2).
+           IF WS-FORMATO = 4 THEN  
+               MOVE 20                       TO WS-FORMATO-FECHA(7:2)
+               MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(9:2)
+           ELSE              
+               MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(7:2)
+           END-IF.
 
        02-05-FORMATO.
            ACCEPT WS-FECHA-ACT           FROM DATE
@@ -151,16 +146,12 @@
            MOVE '/'                      TO WS-FORMATO-FECHA(3:1)
            MOVE WS-FECHA-ACT(3:2)        TO WS-FORMATO-FECHA(4:2)
            MOVE '/'                      TO WS-FORMATO-FECHA(6:1)
-           MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(7:2).
-
-       02-06-FORMATO.
-           ACCEPT WS-FECHA-ACT           FROM DATE
-           MOVE WS-FECHA-ACT(5:2)        TO WS-FORMATO-FECHA(1:2)
-           MOVE '/'                      TO WS-FORMATO-FECHA(3:1)
-           MOVE WS-FECHA-ACT(3:2)        TO WS-FORMATO-FECHA(4:2)
-           MOVE '/'                      TO WS-FORMATO-FECHA(6:1)
-           MOVE 20                       TO WS-FORMATO-FECHA(7:2)
-           MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(9:2).
+           IF WS-FORMATO = 6 THEN
+               MOVE 20                       TO WS-FORMATO-FECHA(7:2)
+               MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(9:2)
+           ELSE
+               MOVE WS-FECHA-ACT(1:2)        TO WS-FORMATO-FECHA(7:2)
+           END-IF.
 
        02-07-FORMATO.
            ACCEPT WS-FECHA-ACT           FROM DATE

@@ -118,7 +118,7 @@
        PROCEDURE DIVISION.
        1000-PRINCIPAL.
            INITIALIZE WS-FECHAS
-           MOVE 7 TO WS-FORMATO
+           MOVE 8 TO WS-FORMATO
            PERFORM MENU-PRINCIPAL UNTIL WS-OPC = 3
            PERFORM 3000-FINAL.
 
@@ -170,6 +170,7 @@
            END-IF.
 
        1-01-OPERACION.
+           PERFORM 999-FECHAS
            DISPLAY 'OPERACION A REALIZAR (C: COMPRA / V: VENTA):'
                                             LINE 02 POSITION 01
            MOVE SPACES TO WS-OPERA
@@ -278,7 +279,7 @@
 
        2-01-MENU-CIERRE.
            DISPLAY CLEAR-SCREEN
-
+           PERFORM 999-FECHAS
            DISPLAY 'CASA DE CAMBIO MONEY'   LINE 02 POSITION 29
                    'MENU DEL CIERRE DIARIO' LINE 05 POSITION 33
                    '1. COMPRAS Y VENTAS POR DIVISAS'
@@ -340,6 +341,7 @@
            END-PERFORM.
 
        02-01-01-2-VENTAS.
+           PERFORM 999-FECHAS
            DISPLAY 'VENTAS'                LINE 12 POSITION 05 
                    'CANTIDAD        VALOR DIVISA     VALOR TOTAL'
                                             LINE 13 POSITION 12
@@ -387,6 +389,7 @@
                            
        02-01-02-FORMAS-PAGO.
            DISPLAY CLEAR-SCREEN
+           PERFORM 999-FECHAS
            DISPLAY 'FORMAS DE PAGO'         line 03 position 05
                     'COMPRAS'               LINE 04 POSITION 05
                     'CANTIDAD        VALOR TOTAL'
