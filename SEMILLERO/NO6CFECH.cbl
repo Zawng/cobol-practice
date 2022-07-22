@@ -102,11 +102,11 @@
 
        02-HALLAR-FORMATO.
            EVALUATE WS-FORMATO
-             WHEN 1 
+             WHEN 1
              WHEN 2 PERFORM 02-01-FORMATO
-             WHEN 3 
+             WHEN 3
              WHEN 4 PERFORM 02-03-FORMATO
-             WHEN 5 
+             WHEN 5
              WHEN 6 PERFORM 02-05-FORMATO
              WHEN 7
              WHEN 8 PERFORM 02-07-FORMATO

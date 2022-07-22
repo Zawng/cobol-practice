@@ -18,7 +18,6 @@
       * 4. MODIFICAR CUALQUIER SERVICIO / BORRARLO
       * 5. IMPRIMA TODOS LOS SERVICIOS DEL MES
       * 6. PERMITA CONSULTAR POR SERVICIO
-
       * lOS SERVICIOS DEBEN SER MINIMO CON UN DIA DE ANTICIPACION
       *----------------------------------------------------------------*
        ID DIVISION.
