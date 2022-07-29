@@ -43,7 +43,7 @@
        SPECIAL-NAMES.                                                   * Opcional    - Cambiar constantes del programa
        DECIMAL-POINT IS COMMA.                                          * Opcional    - Cambiar el punto virtual
        CURRENCY SIGN IS $.                                              * Opcional    - Cambiar el simbolo monetario
-           
+       
        INPUT-OUTPUT SECTION.                                            * Opcional    - Definición de archivos
        FILE-CONTROL.                                                    * Opcional    - Sirve para especificar nombres de archivos etc
        SELECT [OPTIONAL] NOMBRE-ARCHIVO                                 * Opcional    - Nombre lógico
