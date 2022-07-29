@@ -167,6 +167,9 @@
 
        01  WS-NUM-SER-AUX         PIC 9(04) VALUE ZEROS.
        01  WS-ESTA                PIC A VALUE SPACES.
+       01  WS-CONSUL              PIC 9(01) VALUE ZEROS.
+       01  WS-ESTADO              PIC 9(01) VALUE ZEROS.
+       01  WS-SERVICIO            PIC 9(01) VALUE ZEROS.
 
       * MASCARAS
        01  WS-MASCARA              PIC $$$,$$9 VALUE ZEROS. 
@@ -191,36 +194,36 @@
        01  REG-SAL-DET-01.
            02 FILLER               PIC X(04) VALUE 'NUME'.
            02 FILLER               PIC X(02) VALUE SPACES.
-           02 FILLER               PIC X(03) VALUE 'SER'.
+           02 FILLER               PIC X(04) VALUE 'SER'.
            02 FILLER               PIC X(02) VALUE SPACES.
-           02 FILLER               PIC X(08) VALUE 'TELEFONO'.
-           02 FILLER               PIC X(09) VALUE SPACES.
-           02 FILLER               PIC X(06) VALUE 'NOMBRE'.
-           02 FILLER               PIC X(09) VALUE SPACES.
-           02 FILLER               PIC X(05) VALUE 'FECHA'.
-           02 FILLER               PIC X(03) VALUE SPACES.
-           02 FILLER               PIC X(04) VALUE 'HORA'.
+           02 FILLER               PIC X(10) VALUE 'TELEFONO'.
+           02 FILLER               PIC X(02) VALUE SPACES.
+           02 FILLER               PIC X(20) VALUE 'NOMBRE'.
+           02 FILLER               PIC X(02) VALUE SPACES.
+           02 FILLER               PIC X(10) VALUE 'FECHA'.
+           02 FILLER               PIC X(02) VALUE SPACES.
+           02 FILLER               PIC X(05) VALUE 'HORA'.
            02 FILLER               PIC X(02) VALUE SPACES.
            02 FILLER               PIC X(01) VALUE 'E'.
            02 FILLER               PIC X(02) VALUE SPACES.
-           02 FILLER               PIC X(05) VALUE 'VALOR'.
+           02 FILLER               PIC X(07) VALUE 'VALOR'.
 
       * DETALLES DE PANTALLA # 1
        01  REG-SAL-DET-02.
            02 RSAL-D02-NUM-SER     PIC 9(04) VALUE ZEROS.
-           02 FILLER               PIC X(01) VALUE SPACES.
+           02 FILLER               PIC X(02) VALUE SPACES.
            02 RSAL-D02-COD-SER     PIC X(01) VALUE ZEROS.
            02 FILLER               PIC X(01) VALUE SPACES.
            02 RSAL-D02-NOM-SER     PIC X(02) VALUE SPACES.
-           02 FILLER               PIC X(01) VALUE SPACES.
+           02 FILLER               PIC X(02) VALUE SPACES.
            02 RSAL-D02-TEL-CLI     PIC 9(10) VALUE ZEROS.
-           02 FILLER               PIC X(01) VALUE SPACES.
+           02 FILLER               PIC X(02) VALUE SPACES.
            02 RSAL-D02-NOM-CLI     PIC X(20) VALUE SPACES.
-           02 FILLER               PIC X(01) VALUE SPACES.
+           02 FILLER               PIC X(02) VALUE SPACES.
            02 RSAL-D02-FEC-SER     PIC X(10) VALUE SPACES.
-           02 FILLER               PIC X(01) VALUE SPACES.
+           02 FILLER               PIC X(02) VALUE SPACES.
            02 RSAL-D02-HOR-SER     PIC X(05) VALUE SPACES.
-           02 FILLER               PIC X(01) VALUE SPACES.
+           02 FILLER               PIC X(02) VALUE SPACES.
            02 RSAL-D02-EST-SER     PIC X(01) VALUE SPACES.
            02 FILLER               PIC X(01) VALUE SPACES.
            02 RSAL-D02-VAL-SER     PIC $$$$,$$9 VALUE ZEROS.
@@ -547,7 +550,7 @@
            PERFORM 1-3-2-BUSCAR-REGISTRO UNTIL SW-SI-ENCONTRO OR
                                                SW-FDA-SERVICIO = 1
            IF SW-SI-ENCONTRO AND ASER-ESTADO = 'P'
-               DISPLAY 'ELIMINACION DE LOS SERIVICIOS' 
+               DISPLAY 'ELIMINACION DE LOS SERVICIOS' 
                                LINE 06 POSITION 35
                PERFORM 1-3-3-MOSTRAR-REGISTRO
                DISPLAY 'ESTA SEGURO DE BORRARLO (S/N)' 
@@ -576,7 +579,89 @@
 
        1-5-MENU-CONSULTAS.
            PERFORM 999-ENCABEZADO-PAN
-           DISPLAY 'CONSULTAS: '         LINE 06 POSITION 01.
+           DISPLAY 'QUE TIPO DE CONSULTA DESEA REALIZAR?: '
+                                            LINE 06 POSITION 21
+                   '1. NUMERO DE SERVICIO ' LINE 07 POSITION 10
+                   '2. ESTADO '             LINE 08 POSITION 10
+                   '3. SERVICIOS '          LINE 09 POSITION 10
+                   '4. TODOS '              LINE 10 POSITION 10
+                   '5. SALIR '              LINE 11 POSITION 10
+                   'OPCION ) '              LINE 12 POSITION 10
+           MOVE ZEROS TO WS-CONSUL
+           PERFORM UNTIL WS-CONSUL > 0 AND < 6
+               ACCEPT WS-CONSUL              LINE 12 POSITION 20
+           END-PERFORM
+           EVALUATE WS-CONSUL
+               WHEN 1 PERFORM 1-5-1-NUM-SERVI
+               WHEN 2 PERFORM 1-5-2-ESTADO
+               WHEN 3 PERFORM 1-5-3-SERVICIOS
+               WHEN 4 PERFORM 1-5-4-TODOS
+           END-EVALUATE.
+
+       1-5-1-NUM-SERVI.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'CONSULTA NUMERO SERVICIO: ' 
+                                   LINE 06 POSITION 01
+           PERFORM 1-3-1-CAPTURA-NUM-SERVI.
+
+       1-5-2-ESTADO.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'QUE TIPO DE ESTADO DESEA CONSULTAR?: '
+                                             LINE 06 POSITION 21
+                   '1. PENDIENTES '         LINE 07 POSITION 10
+                   '2. REALIZADOS '         LINE 08 POSITION 10
+                   '3. CANCELADOS '         LINE 09 POSITION 10
+                   '4. SALIR '              LINE 10 POSITION 10
+                   'OPCION ) '              LINE 11 POSITION 10
+           MOVE ZEROS TO WS-ESTADO
+           PERFORM UNTIL WS-ESTADO > 0 AND < 5
+               ACCEPT WS-ESTADO              LINE 11 POSITION 20
+           END-PERFORM.
+      *    EVALUATE WS-ESTADO
+      *        WHEN 1 PERFORM 1-5-2-1-PENDIENTES
+      *        WHEN 2 PERFORM 1-5-2-2-REALIZADOS
+      *        WHEN 3 PERFORM 1-5-2-3-CANCELADOS
+      *    END-EVALUATE.
+
+       1-5-3-SERVICIOS.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'QUE TIPO DE SERVICIO DESEA CONSULTAR?: '
+                                             LINE 06 POSITION 21
+                   '1. BAUTISMO         '   LINE 07 POSITION 10
+                   '2. PRIMERA COMUNION '   LINE 08 POSITION 10
+                   '3. CONFIRMACION '       LINE 09 POSITION 10
+                   '4. MATRIMONIO '         LINE 10 POSITION 10
+                   '5. FUNERALES '          LINE 11 POSITION 10
+                   '6. MISAS '              LINE 12 POSITION 10
+                   '7. SALIR '              LINE 13 POSITION 10
+                   'OPCION ) '              LINE 14 POSITION 10
+           MOVE ZEROS TO WS-SERVICIO
+           PERFORM UNTIL WS-SERVICIO > 0 AND < 8
+               ACCEPT WS-SERVICIO           LINE 14 POSITION 20
+           END-PERFORM.
+      *    EVALUATE WS-SERVICIO
+      *        WHEN 1 PERFORM 1-5-2-1-PENDIENTES
+      *        WHEN 2 PERFORM 1-5-2-2-REALIZADOS
+      *        WHEN 3 PERFORM 1-5-2-3-CANCELADOS
+      *    END-EVALUATE.
+
+       1-5-4-TODOS.
+           PERFORM 999-ENCABEZADO-PAN
+           PERFORM 999-PANTALLA-SALIDA.
+
+       999-PANTALLA-SALIDA.
+           MOVE 9999 TO RSAL-D02-NUM-SER
+           MOVE '1' TO RSAL-D02-COD-SER
+           MOVE 'BA' TO RSAL-D02-NOM-SER
+           MOVE 999999999 TO RSAL-D02-TEL-CLI
+           MOVE 'XXXXXXXXXXXXXXXXXXXX' TO RSAL-D02-NOM-CLI
+           MOVE '99-99-9999' TO RSAL-D02-FEC-SER
+           MOVE '99:99' TO RSAL-D02-HOR-SER
+           MOVE 'P' TO RSAL-D02-EST-SER
+           MOVE 99999 TO RSAL-D02-VAL-SER
+           DISPLAY REG-SAL-DET-01    LINE 06 POSITION 01
+                   REG-SAL-DET-02    LINE 07 POSITION 01
+           ACCEPT WS-ENTER           LINE 24 POSITION 01.
 
        999-ENCABEZADO-PAN.
            DISPLAY CLEAR-SCREEN
