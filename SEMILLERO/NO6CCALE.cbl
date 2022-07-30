@@ -17,8 +17,8 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
       * ARCHIVO QUE GUARDARA LA INFORMACION DE LOS DIAS Y HORAS
-           SELECT DATOSCAL ASSIGN TO PATH
-           ORGANIZATION IS SEQUENTIAL
+           SELECT DATOSCAL ASSIGN TO './FILES/CALENDARIO/DATOSCAL'
+           ORGANIZATION IS LINE SEQUENTIAL
            ACCESS MODE IS SEQUENTIAL
            FILE STATUS IS VAR-ESTADO.
       *----------------------------------------------------------------*
@@ -29,8 +29,6 @@
        FD  DATOSCAL LABEL RECORD STANDARD
            RECORDING MODE IS FIXED
            BLOCK CONTAINS 0 RECORDS.
-      *    TODO: CAMBIAR EL FORMATO DE LA FECHA O MODIFICAR EL SISTEMA 
-      *    DINÁMICO DE LA CREACIÓN DE ARCHIVOS 
        01  REG-CALENDARIO.
            02 REG-FECHA             PIC 9(06).
            02 REG-HORA              PIC 9(02).
@@ -56,8 +54,8 @@
 
        01  REG-SAL-ENC-03.
            02 FILLER                PIC X(24) VALUE SPACES.
-           02 FILLER                PIC X(31) VALUE 'CALENDARIO PARROQUIA
-      -                                            ' SAN MIGUEL'.
+           02 FILLER                PIC X(31) VALUE 'CALENDARIO PARROQUI
+      -                                            'A SAN MIGUEL'.
            02 FILLER                PIC X(25) VALUE SPACES.
 
       *                           PROCESOS                             *
@@ -65,11 +63,14 @@
        01  WS-CREAR                 PIC A(01) VALUE SPACES.
            88 SI-CREAR              VALUE 'S' 's'.
            88 NO-CREAR              VALUE 'N' 'n'.
-       01  WS-MES-ACTUAL            PIC X(10) VALUE SPACES.
-       01  WS-MENSAJE-CREAR-ARCHIVO PIC X(80) VALUE SPACES.
-       01  PATH                     PIC X(27) VALUE 
-                                    './FILES/CALENDARIO/'.
-       01  WS-PATH-FIX              PIC 9(02) VALUE 20.
+
+      * VARIABLES PARA EL FOR ANIDADO DE 3 NIVELES, SIN VALIDAR EL AÑO 
+      * YA QUE SERÁ TOMATDO AUTOMÁTICAMENTE POR EL SISTEMA
+      * M: MESES, D: DIAS, H: HORAS.
+       01  M                        PIC 9(02) VALUE ZEROS.
+       01  D                        PIC 9(02) VALUE ZEROS.
+       01  H                        PIC 9(02) VALUE ZEROS. 
+       01  LI                       PIC 9(02) VALUE ZEROS.
 
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -99,57 +100,37 @@
       *        WHEN 3 PERFORM 1000-3-MENU-CONSULTAS
            END-EVALUATE.
 
+
        1000-1-CREA-ARCHIVO.
            PERFORM 999-ENCABEZADO-PAN
-           PERFORM 1000-1-1-HALLAR-MES
-           DISPLAY WS-MENSAJE-CREAR-ARCHIVO         LINE 07 POSITION 01
-           DISPLAY 'SI EL ARCHIVO YA EXISTE, SE PERDERA LA INFORMACION'
+           DISPLAY 'SE CREARA UN ARCHIVO NUEVO, PERDERA TODA LA INFORMAC
+      -            'ION ALOJADA. '
                                                     LINE 06 POSITION 01
+                   'DESEA CONTINUAR? (S/N):'        LINE 07 POSITION 01
            MOVE SPACES TO WS-CREAR
            PERFORM UNTIL SI-CREAR OR NO-CREAR
-               ACCEPT WS-CREAR                      LINE 07 POSITION 56
+               ACCEPT WS-CREAR                      LINE 07 POSITION 25
            END-PERFORM
            IF SI-CREAR
              OPEN OUTPUT DATOSCAL
+             PERFORM 1000-1-1-GENERAR-INFORMACION
              CLOSE DATOSCAL
              DISPLAY 'ARCHIVO CREADO CON EXITO!' 
                                                     LINE 12 POSITION 23
              PERFORM 999-ENTER
            END-IF.
 
-       1000-1-1-HALLAR-MES.
-           EVALUATE WS-FEC-SIS(3:2)
-               WHEN 01 MOVE 'ENE'  TO WS-MES-ACTUAL
-               WHEN 02 MOVE 'FEB'  TO WS-MES-ACTUAL
-               WHEN 03 MOVE 'MAR'  TO WS-MES-ACTUAL
-               WHEN 04 MOVE 'ABR'  TO WS-MES-ACTUAL
-               WHEN 05 MOVE 'MAY'  TO WS-MES-ACTUAL
-               WHEN 06 MOVE 'JUN'  TO WS-MES-ACTUAL
-               WHEN 07 MOVE 'JUL'  TO WS-MES-ACTUAL
-               WHEN 08 MOVE 'AGO'  TO WS-MES-ACTUAL
-               WHEN 09 MOVE 'SEP'  TO WS-MES-ACTUAL
-               WHEN 10 MOVE 'OCT'  TO WS-MES-ACTUAL
-               WHEN 11 MOVE 'NOV'  TO WS-MES-ACTUAL
-               WHEN 12 MOVE 'DIC'  TO WS-MES-ACTUAL
-           END-EVALUATE
-      *    CREAR MENSAJE CON EL RESPECTIVO MES ACTUAL
-           STRING 'DESEA CREAR ARCHIVO PARA EL MES DE ' 
-                                   DELIMITED BY SIZE
-                   WS-MES-ACTUAL   DELIMITED BY SPACE
-                   ' DEL 20'       DELIMITED BY SIZE
-                   WS-FEC-SIS(1:2) DELIMITED BY SIZE
-                   ' (S/N): '      DELIMITED BY SIZE
-                   INTO WS-MENSAJE-CREAR-ARCHIVO
-           END-STRING
-      *    CREAR NOMBRE DEL ARCHIVO CON EL MES ACTUAL
-           STRING 'D'             DELIMITED BY SIZE
-                  WS-MES-ACTUAL   DELIMITED BY SPACE
-                  '20'            DELIMITED BY SIZE
-                  WS-FEC-SIS(1:2) DELIMITED BY SIZE
-                  INTO PATH
-                  WITH POINTER WS-PATH-FIX
-           END-STRING.
-               
+       1000-1-1-GENERAR-INFORMACION.
+           PERFORM VARYING M FROM 01 BY 01 UNTIL M > 12
+             AFTER D FROM 01 BY 01 UNTIL D > 30
+               AFTER H FROM 06 BY 01 UNTIL H > 20
+                 MOVE D               TO REG-FECHA(1:2)
+                 MOVE M               TO REG-FECHA(3:2)
+                 MOVE WS-FEC-SIS(1:2) TO REG-FECHA(5:2)
+                 MOVE H               TO REG-HORA
+                 MOVE SPACES          TO REG-ESTADO
+                 WRITE REG-CALENDARIO
+           END-PERFORM.
 
        999-ENCABEZADO-PAN.
            DISPLAY CLEAR-SCREEN
