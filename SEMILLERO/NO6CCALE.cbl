@@ -29,6 +29,8 @@
        FD  DATOSCAL LABEL RECORD STANDARD
            RECORDING MODE IS FIXED
            BLOCK CONTAINS 0 RECORDS.
+      *    TODO: CAMBIAR EL FORMATO DE LA FECHA O MODIFICAR EL SISTEMA 
+      *    DINÁMICO DE LA CREACIÓN DE ARCHIVOS 
        01  REG-CALENDARIO.
            02 REG-FECHA             PIC 9(06).
            02 REG-HORA              PIC 9(02).
@@ -105,7 +107,7 @@
                                                     LINE 06 POSITION 01
            MOVE SPACES TO WS-CREAR
            PERFORM UNTIL SI-CREAR OR NO-CREAR
-               ACCEPT WS-CREAR                      LINE 07 POSITION 53
+               ACCEPT WS-CREAR                      LINE 07 POSITION 56
            END-PERFORM
            IF SI-CREAR
              OPEN OUTPUT DATOSCAL
@@ -132,9 +134,11 @@
            END-EVALUATE
       *    CREAR MENSAJE CON EL RESPECTIVO MES ACTUAL
            STRING 'DESEA CREAR ARCHIVO PARA EL MES DE ' 
-                                 DELIMITED BY SIZE
-                   WS-MES-ACTUAL DELIMITED BY SPACE
-                   ' (S/N): '    DELIMITED BY SIZE
+                                   DELIMITED BY SIZE
+                   WS-MES-ACTUAL   DELIMITED BY SPACE
+                   ' DEL 20'       DELIMITED BY SIZE
+                   WS-FEC-SIS(1:2) DELIMITED BY SIZE
+                   ' (S/N): '      DELIMITED BY SIZE
                    INTO WS-MENSAJE-CREAR-ARCHIVO
            END-STRING
       *    CREAR NOMBRE DEL ARCHIVO CON EL MES ACTUAL
