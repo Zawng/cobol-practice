@@ -165,11 +165,15 @@
            88 SW-SI-ENCONTRO      VALUE 'S' 's'.
            88 SW-NO-ENCONTRO      VALUE 'N' 'n'.
 
-       01  WS-NUM-SER-AUX         PIC 9(04) VALUE ZEROS.
-       01  WS-ESTA                PIC A VALUE SPACES.
-       01  WS-CONSUL              PIC 9(01) VALUE ZEROS.
-       01  WS-ESTADO              PIC 9(01) VALUE ZEROS.
-       01  WS-SERVICIO            PIC 9(01) VALUE ZEROS.
+       01  WS-NUM-SER-AUX          PIC 9(04) VALUE ZEROS.
+       01  WS-ESTA                 PIC A VALUE SPACES.
+       01  WS-OPC2                 PIC 9(01) VALUE ZEROS.
+       01  WS-EST                  PIC A VALUE SPACES.
+           88 ESTADO-PEN           VALUE 'P' 'p'.
+           88 ESTADO-REA           VALUE 'R' 'r'.
+           88 ESTADO-CAN           VALUE 'C' 'c'.
+       01  WS-SERVICIO             PIC 9(01) VALUE ZEROS.
+       01  LI                      PIC 9(02) VALUE ZEROS.
 
       * MASCARAS
        01  WS-MASCARA              PIC $$$,$$9 VALUE ZEROS. 
@@ -258,8 +262,9 @@
                WHEN 2 PERFORM 1-2-ADICIONA-SERVICIO
                WHEN 3 PERFORM 1-3-MODIFICA-SERVICIO
                WHEN 4 PERFORM 1-4-BORRA-SERVICIO
-               WHEN 5 PERFORM 1-5-MENU-CONSULTAS
-      *        WHEN 6 PERFORM 1-6-IMPRIME-ARCHIVO
+               WHEN 5 MOVE 0 TO WS-OPC2 
+                      PERFORM 1-5-MENU-CONSULTAS UNTIL WS-OPC2 = 5
+               WHEN 6 PERFORM 1-6-IMPRIME-ARCHIVO
            END-EVALUATE.
 
        1-1-CREA-ARCHIVO.
@@ -519,7 +524,7 @@
            DISPLAY 'FECHA EVENTO:'      LINE 12 POSITION 01
            DISPLAY ASER-FECHA           LINE 12 POSITION 18
            DISPLAY 'HORA EVENTO:'       LINE 12 POSITION 56
-           DISPLAY ASER-HORA            LINE 12 POSITION 67
+           DISPLAY ASER-HORA            LINE 12 POSITION 70
            DISPLAY 'TOTAL SERVICIO:'    LINE 13 POSITION 01
            MOVE ASER-VALOR TO WS-MASCARA
            DISPLAY WS-MASCARA          LINE 13 POSITION 18
@@ -587,81 +592,213 @@
                    '4. TODOS '              LINE 10 POSITION 10
                    '5. SALIR '              LINE 11 POSITION 10
                    'OPCION ) '              LINE 12 POSITION 10
-           MOVE ZEROS TO WS-CONSUL
-           PERFORM UNTIL WS-CONSUL > 0 AND < 6
-               ACCEPT WS-CONSUL              LINE 12 POSITION 20
+           MOVE ZEROS TO WS-OPC2
+           PERFORM UNTIL WS-OPC2 > 0 AND < 6
+               ACCEPT WS-OPC2             LINE 12 POSITION 20
            END-PERFORM
-           EVALUATE WS-CONSUL
-               WHEN 1 PERFORM 1-5-1-NUM-SERVI
-               WHEN 2 PERFORM 1-5-2-ESTADO
-               WHEN 3 PERFORM 1-5-3-SERVICIOS
-               WHEN 4 PERFORM 1-5-4-TODOS
+           EVALUATE WS-OPC2
+               WHEN 1 PERFORM 1-5-1-CONSU-NUM-SERVI
+               WHEN 2 PERFORM 1-5-2-CONSU-POR-ESTADO
+               WHEN 3 PERFORM 1-5-3-CONSU-POR-SERVICIOS
+               WHEN 4 PERFORM 1-5-4-CONSU-TODO-ARCHIVO
            END-EVALUATE.
 
-       1-5-1-NUM-SERVI.
+       1-5-1-CONSU-NUM-SERVI.
            PERFORM 999-ENCABEZADO-PAN
-           DISPLAY 'CONSULTA NUMERO SERVICIO: ' 
-                                   LINE 06 POSITION 01
-           PERFORM 1-3-1-CAPTURA-NUM-SERVI.
+           PERFORM 1-3-1-CAPTURA-NUM-SERVI
+           OPEN INPUT SERVICIO 
+           SET SW-NO-ENCONTRO TO TRUE
+           MOVE 0 TO SW-FDA-SERVICIO
+           PERFORM 1-3-2-BUSCAR-REGISTRO UNTIL SW-SI-ENCONTRO OR
+                                               SW-FDA-SERVICIO = 1
+           IF SW-SI-ENCONTRO
+               PERFORM 1-3-3-MOSTRAR-REGISTRO
+               DISPLAY 'OPRIMA ENTER PARA SALIR:' 
+                               LINE 24 POSITION 27
+               ACCEPT WS-ENTER  LINE 24 POSITION 50
+           ELSE
+               DISPLAY 'SERVICIO INEXISTENTE, ENTER PARA SALIR:'
+                                LINE 24 POSITION 34
+               ACCEPT WS-ENTER  LINE 24 POSITION 50
+           END-IF
+           CLOSE SERVICIO.
 
-       1-5-2-ESTADO.
+       1-5-2-CONSU-POR-ESTADO.
+           PERFORM 999-ENCABEZADO-PAN
+           PERFORM 1-5-2-1-CAPTURA-ESTADO
+           PERFORM 1-5-2-2-TITULO-DETA-PAN
+           MOVE 7 TO LI
+           OPEN I-O SERVICIO
+           SET SW-NO-ENCONTRO TO TRUE
+           MOVE 0 TO SW-FDA-SERVICIO
+           PERFORM 1-5-2-3-BUSCA-ESTADOS UNTIL SW-FDA-SERVICIO = 1
+           PERFORM 999-ENTER
+           CLOSE SERVICIO.
+
+       1-5-2-1-CAPTURA-ESTADO.
            PERFORM 999-ENCABEZADO-PAN
            DISPLAY 'QUE TIPO DE ESTADO DESEA CONSULTAR?: '
-                                             LINE 06 POSITION 21
-                   '1. PENDIENTES '         LINE 07 POSITION 10
-                   '2. REALIZADOS '         LINE 08 POSITION 10
-                   '3. CANCELADOS '         LINE 09 POSITION 10
-                   '4. SALIR '              LINE 10 POSITION 10
+                                            LINE 06 POSITION 21
+                   'P. PENDIENTES '         LINE 07 POSITION 10
+                   'R. REALIZADOS '         LINE 08 POSITION 10
+                   'C. CANCELADOS '         LINE 09 POSITION 10
                    'OPCION ) '              LINE 11 POSITION 10
-           MOVE ZEROS TO WS-ESTADO
-           PERFORM UNTIL WS-ESTADO > 0 AND < 5
-               ACCEPT WS-ESTADO              LINE 11 POSITION 20
-           END-PERFORM.
-      *    EVALUATE WS-ESTADO
-      *        WHEN 1 PERFORM 1-5-2-1-PENDIENTES
-      *        WHEN 2 PERFORM 1-5-2-2-REALIZADOS
-      *        WHEN 3 PERFORM 1-5-2-3-CANCELADOS
-      *    END-EVALUATE.
+           MOVE SPACES TO WS-EST
+           PERFORM UNTIL ESTADO-PEN OR ESTADO-REA OR ESTADO-CAN
+               ACCEPT WS-EST                LINE 11 POSITION 20
+           END-PERFORM
+           INSPECT WS-EST CONVERTING 'prc' TO 'PRC'.
 
-       1-5-3-SERVICIOS.
+       1-5-2-2-TITULO-DETA-PAN.
            PERFORM 999-ENCABEZADO-PAN
-           DISPLAY 'QUE TIPO DE SERVICIO DESEA CONSULTAR?: '
-                                             LINE 06 POSITION 21
-                   '1. BAUTISMO         '   LINE 07 POSITION 10
-                   '2. PRIMERA COMUNION '   LINE 08 POSITION 10
-                   '3. CONFIRMACION '       LINE 09 POSITION 10
-                   '4. MATRIMONIO '         LINE 10 POSITION 10
-                   '5. FUNERALES '          LINE 11 POSITION 10
-                   '6. MISAS '              LINE 12 POSITION 10
-                   '7. SALIR '              LINE 13 POSITION 10
-                   'OPCION ) '              LINE 14 POSITION 10
-           MOVE ZEROS TO WS-SERVICIO
-           PERFORM UNTIL WS-SERVICIO > 0 AND < 8
-               ACCEPT WS-SERVICIO           LINE 14 POSITION 20
-           END-PERFORM.
-      *    EVALUATE WS-SERVICIO
-      *        WHEN 1 PERFORM 1-5-2-1-PENDIENTES
-      *        WHEN 2 PERFORM 1-5-2-2-REALIZADOS
-      *        WHEN 3 PERFORM 1-5-2-3-CANCELADOS
-      *    END-EVALUATE.
+           DISPLAY REG-SAL-DET-01           LINE 06 POSITION 01.
 
-       1-5-4-TODOS.
+       1-5-2-3-BUSCA-ESTADOS.
+           READ SERVICIO AT END MOVE 1 TO SW-FDA-SERVICIO
+                         NOT AT END PERFORM 1-5-2-3-1-AVERIGUA-ESTADO
+           END-READ.
+
+       1-5-2-3-1-AVERIGUA-ESTADO.
+           IF ASER-ESTADO = WS-EST
+               SET SW-SI-ENCONTRO TO TRUE
+               PERFORM 1-5-3-1-1-MUESTRE-REGISTRO
+               DISPLAY REG-SAL-DET-02      LINE LI POSITION 01
+               ADD 1 TO LI
+               IF LI = 23
+                    PERFORM 999-ENCABEZADO-PAN
+                    PERFORM 1-5-2-2-TITULO-DETA-PAN
+                    MOVE 7 TO LI
+                    PERFORM 999-ENTER
+           END-IF.
+
+       1-5-3-1-1-MUESTRE-REGISTRO.
+           MOVE ASER-NUM-SERVICIO      TO RSAL-D02-NUM-SER
+           MOVE ASER-COD-SERVICIO      TO RSAL-D02-COD-SER
+           EVALUATE ASER-COD-SERVICIO
+               WHEN 1 MOVE 'BA' TO RSAL-D02-NOM-SER
+               WHEN 2 MOVE 'PR' TO RSAL-D02-NOM-SER
+               WHEN 3 MOVE 'CO' TO RSAL-D02-NOM-SER
+               WHEN 4 MOVE 'MA' TO RSAL-D02-NOM-SER
+               WHEN 5 MOVE 'FU' TO RSAL-D02-NOM-SER
+               WHEN 6 MOVE 'MI' TO RSAL-D02-NOM-SER
+           END-EVALUATE
+           MOVE 'BA'                   TO RSAL-D02-NOM-SER
+           MOVE ASER-TELEFONO          TO RSAL-D02-TEL-CLI
+           MOVE ASER-NOMBRE            TO RSAL-D02-NOM-CLI
+           MOVE ASER-FECHA             TO RSAL-D02-FEC-SER
+           MOVE ASER-HORA              TO RSAL-D02-HOR-SER
+           MOVE ASER-ESTADO            TO RSAL-D02-EST-SER
+           MOVE ASER-VALOR             TO RSAL-D02-VAL-SER.
+
+       1-5-3-CONSU-POR-SERVICIOS.
            PERFORM 999-ENCABEZADO-PAN
-           PERFORM 999-PANTALLA-SALIDA.
+           PERFORM 1-2-0-CAPTURA-SERVICIO
+           PERFORM 1-5-2-2-TITULO-DETA-PAN
+           MOVE 7 TO LI
+           OPEN INPUT SERVICIO
+           SET SW-NO-ENCONTRO TO TRUE
+           MOVE 0 TO SW-FDA-SERVICIO
+           PERFORM 1-5-3-1-BUSCA-SERVICIOS UNTIL SW-FDA-SERVICIO = 1
+           PERFORM 999-ENTER
+           CLOSE SERVICIO.
 
-       999-PANTALLA-SALIDA.
-           MOVE 9999 TO RSAL-D02-NUM-SER
-           MOVE '1' TO RSAL-D02-COD-SER
-           MOVE 'BA' TO RSAL-D02-NOM-SER
-           MOVE 999999999 TO RSAL-D02-TEL-CLI
-           MOVE 'XXXXXXXXXXXXXXXXXXXX' TO RSAL-D02-NOM-CLI
-           MOVE '99-99-9999' TO RSAL-D02-FEC-SER
-           MOVE '99:99' TO RSAL-D02-HOR-SER
-           MOVE 'P' TO RSAL-D02-EST-SER
-           MOVE 99999 TO RSAL-D02-VAL-SER
-           DISPLAY REG-SAL-DET-01    LINE 06 POSITION 01
-                   REG-SAL-DET-02    LINE 07 POSITION 01
-           ACCEPT WS-ENTER           LINE 24 POSITION 01.
+       1-5-3-1-BUSCA-SERVICIOS.
+           READ SERVICIO AT END MOVE 1 TO SW-FDA-SERVICIO
+                         NOT AT END PERFORM 1-5-3-1-1-AVERIGUA-SERVICI
+           END-READ.
+
+       1-5-3-1-1-AVERIGUA-SERVICI.
+           IF ASER-COD-SERVICIO = WS-SER
+               SET SW-SI-ENCONTRO TO TRUE
+               PERFORM 1-5-3-1-1-MUESTRE-REGISTRO
+               DISPLAY REG-SAL-DET-02      LINE LI POSITION 01
+               ADD 1 TO LI
+               IF LI = 23
+                    MOVE 7 TO LI
+                    PERFORM 999-ENTER
+                    PERFORM 999-ENCABEZADO-PAN
+                    PERFORM 1-5-2-2-TITULO-DETA-PAN
+           END-IF.
+
+       1-5-4-CONSU-TODO-ARCHIVO.
+           PERFORM 999-ENCABEZADO-PAN
+           PERFORM 1-5-2-2-TITULO-DETA-PAN
+           MOVE 7 TO LI
+           OPEN INPUT SERVICIO
+           MOVE 0 TO SW-FDA-SERVICIO
+           PERFORM 1-5-4-1-BUSCA-TODOS UNTIL SW-FDA-SERVICIO = 1
+           PERFORM 999-ENTER
+           CLOSE SERVICIO.
+
+       1-5-4-1-BUSCA-TODOS.
+           READ SERVICIO AT END MOVE 1 TO SW-FDA-SERVICIO
+                         NOT AT END PERFORM 1-5-4-1-1-MUESTRA-TODOS
+           END-READ.
+
+       1-5-4-1-1-MUESTRA-TODOS.
+           PERFORM 1-5-3-1-1-MUESTRE-REGISTRO
+           DISPLAY REG-SAL-DET-02      LINE LI POSITION 01
+           ADD 1 TO LI
+           IF LI = 23
+                MOVE 7 TO LI
+                PERFORM 999-ENTER
+                PERFORM 999-ENCABEZADO-PAN
+                PERFORM 1-5-2-2-TITULO-DETA-PAN
+           END-IF.
+
+       1-6-IMPRIME-ARCHIVO.
+           OPEN OUTPUT IMPRESOR
+           PERFORM 1-6-1-ENCABEZADO-IMP
+           PERFORM 1-6-2-TITULO-DETA-IMP
+           MOVE 7 TO LI
+           OPEN INPUT SERVICIO
+           MOVE 0 TO SW-FDA-SERVICIO
+           PERFORM 1-6-3-IMPRIME-TODOS UNTIL SW-FDA-SERVICIO = 1
+           PERFORM 999-ENTER
+           CLOSE SERVICIO IMPRESOR.
+
+       1-6-1-ENCABEZADO-IMP.
+           DISPLAY CLEAR-SCREEN
+      * TOMAR FECHA DEL SISTEMA Y MODIFICAR EL FORMATO SOLICITADO
+           ACCEPT WS-FEC-SIS       FROM DATE
+           MOVE WS-FEC-SIS(5:2)    TO WS-FEC-EDI-DIA
+           MOVE WS-FEC-SIS(3:2)    TO WS-FEC-EDI-MES
+           MOVE WS-FEC-SIS(1:2)    TO WS-FEC-EDI-ANO
+           MOVE WS-FEC-EDI         TO RSAL-01-FEC-SIS
+      * TOMAR FECHA DEL SISTEMA Y MODIFICAR EL FORMATO SOLICITADO
+           ACCEPT WS-HOR-SIS       FROM TIME
+           MOVE WS-HOR-SIS(1:2)    TO WS-HOR-EDI-HOR
+           MOVE WS-HOR-SIS(3:2)    TO WS-HOR-EDI-MIN
+           MOVE WS-HOR-SIS(5:2)    TO WS-HOR-EDI-SEG
+           MOVE WS-HOR-EDI         TO RSAL-01-HOR-SIS
+      * SE GENERA EL ENCABEZADO
+           WRITE REG-IMPRESOR FROM REG-SAL-ENC-01 AFTER PAGE END-WRITE
+           WRITE REG-IMPRESOR FROM REG-SAL-ENC-02 AFTER 1 END-WRITE
+           WRITE REG-IMPRESOR FROM REG-SAL-ENC-03 AFTER 1 END-WRITE
+           WRITE REG-IMPRESOR FROM REG-SAL-ENC-02 AFTER 1 END-WRITE.
+
+       1-6-2-TITULO-DETA-IMP.
+      *    PERFORM 1-6-1-ENCABEZADO-IMP
+           WRITE REG-IMPRESOR FROM REG-SAL-DET-01 AFTER 1 END-WRITE.
+
+       1-6-3-IMPRIME-TODOS.
+            READ SERVICIO AT END MOVE 1 TO SW-FDA-SERVICIO
+                          NOT AT END PERFORM 1-6-3-1-IMPRIMA-REGISTRO
+            END-READ.
+
+       1-6-3-1-IMPRIMA-REGISTRO.
+           PERFORM 1-5-3-1-1-MUESTRE-REGISTRO
+           WRITE REG-IMPRESOR FROM REG-SAL-DET-02 AFTER 1 END-WRITE
+           ADD 1 TO LI
+           IF LI = 60
+                PERFORM 1-6-2-TITULO-DETA-IMP
+                MOVE 7 TO LI
+           END-IF.
+
+       999-ENTER.
+           DISPLAY 'IMPRESION REALIZADA CON EXITO' 
+                       LINE 24 POSITION 27
+           ACCEPT WS-ENTER  LINE 24 POSITION 55.
 
        999-ENCABEZADO-PAN.
            DISPLAY CLEAR-SCREEN

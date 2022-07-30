@@ -1,24 +1,10 @@
       *----------------------------------------------------------------*
       *                           IDENTIFICATION                       *
-      * OBJETIVO: SIMULAR LOS MOVIMIENTOS DE UNA CAJA DE CAMBIO
-      * PARROQUIA SAN MIGUEL
-      * 1. BAUTIZOS            50k
-      * 2. PRIMERA COMUNION    80k
-      * 3. CONFIRMACION        20k
-      * 4. MATRIMONIO          250k
-      * 5. FUNERALES           300k
-      * 6. MISAS               60k
-
-      * HACER UN PROGRAMA QUE LE PERMITE LLEVAR LA INFORMACION DE TODOS
-      * LOS SERVICIOS QUE PRESTA LA IGLESIA.
-      * 1. INFORMACION QUEDE EN ARCHIVO
-      * 2. REGISTRAR CADA UNO DE LOS SERVICIOS QUE LLEVO DURANTE EL MES
-      * 3. CONSULTAR TODOS LOS SERVICIOS, EN CUALQUIER MOMENTO 
-      * (PENDIENTES, REALIZADOS, CANCELADOS)
-      * 4. MODIFICAR CUALQUIER SERVICIO / BORRARLO
-      * 5. IMPRIMA TODOS LOS SERVICIOS DEL MES
-      * 6. PERMITA CONSULTAR POR SERVICIO
-      * lOS SERVICIOS DEBEN SER MINIMO CON UN DIA DE ANTICIPACION
+      * OBJETIVOS: VALIDAR EL CALENDARIO, NO PUEDEN HABER 2 FECHAS 
+      * IGUALES
+      * FECHA: (ddmmaa) PIC 9(06)
+      * HORA: (HH)      PIC 9(02) 6(am 20 pm)
+      * ESTADO  A (H: HABIL, I(INHABIL))      PIC A(01)
       *----------------------------------------------------------------*
        ID DIVISION.
        PROGRAM-ID.                       NO1CMONY.
