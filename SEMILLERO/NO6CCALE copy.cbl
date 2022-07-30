@@ -58,14 +58,6 @@
       -                                            'A SAN MIGUEL'.
            02 FILLER                PIC X(25) VALUE SPACES.
 
-       01  REG-SAL-DIA.
-           02 FILLER                PIC X(10) VALUE SPACES.
-           02 FILLER                PIC X(05) VALUE ALL 'FECHA'.
-           02 FILLER                PIC X(10) VALUE SPACES.
-           02 FILLER                PIC X(04) VALUE ALL 'HORA'.
-           02 FILLER                PIC X(10) VALUE SPACES.
-           02 FILLER                PIC X(06) VALUE ALL 'ESTADO'.
-
       *                           PROCESOS                             *
        01  WS-CREAR                 PIC A(01) VALUE SPACES.
            88 SI-CREAR              VALUE 'S' 's'.
@@ -74,9 +66,9 @@
        01  WS-FIN-ARCHIVO           PIC 9(01) VALUE ZEROS.
        01  WS-OPC                   PIC 9(01) VALUE ZEROS.
        01  WS-INHA                  PIC 9(01) VALUE ZEROS.
-       01  WS-HORA                  PIC 9(02) VALUE ZEROS.  
-       01  WS-DIA                   PIC 9(02) VALUE ZEROS.  
-       01  WS-MES                   PIC 9(02) VALUE ZEROS.  
+       01  WS-INHA-HORA              PIC 9(02) VALUE ZEROS.  
+       01  WS-INHA-DIA              PIC 9(02) VALUE ZEROS.  
+       01  WS-INHA-MES              PIC 9(02) VALUE ZEROS.  
 
       * VARIABLES PARA EL FOR ANIDADO DE 3 NIVELES, SIN VALIDAR EL AÑO 
       * YA QUE SERÁ TOMATDO AUTOMÁTICAMENTE POR EL SISTEMA
@@ -111,7 +103,7 @@
                WHEN 1 PERFORM 1000-1-CREA-ARCHIVO
                WHEN 2 MOVE ZEROS TO WS-INHA
                       PERFORM 1000-2-MENU-INHABILITAR UNTIL WS-INHA = 4
-               WHEN 3 PERFORM 1000-3-1-CONSULTAR-DIA
+      *        WHEN 3 PERFORM 1000-3-MENU-CONSULTAS
            END-EVALUATE.
 
        1000-1-CREA-ARCHIVO.
@@ -180,7 +172,7 @@
            END-READ.
 
        1000-2-1-2-MODIFICAR-MES.
-           IF REG-FECHA(3:2) = WS-MES
+           IF REG-FECHA(3:2) = WS-INHA-MES
              MOVE 'I' TO REG-ESTADO
              REWRITE REG-CALENDARIO END-REWRITE
            END-IF.
@@ -203,14 +195,15 @@
            END-READ.
 
        1000-2-2-2-MODIFICAR-DIA.
-           IF REG-FECHA(1:2) = WS-DIA AND REG-FECHA(3:2) = WS-MES
+           IF REG-FECHA(1:2) = WS-INHA-DIA AND REG-FECHA(3:2) = 
+                                                       WS-INHA-MES
              MOVE 'I' TO REG-ESTADO
              REWRITE REG-CALENDARIO END-REWRITE
            END-IF.
 
        1000-2-3-INHABILITAR-HORAS.
            PERFORM 999-ENCABEZADO-PAN
-           PERFORM 999-SOLICITAR-HORA
+           PERFORM 9999-SOLICITAR-HORA
            PERFORM 999-SOLICITAR-DIA
            PERFORM 999-SOLICITAR-MES
            MOVE 0 TO WS-FIN-ARCHIVO
@@ -227,61 +220,28 @@
            END-READ.
 
        1000-2-3-2-MODIFICAR-HORA.
-           IF REG-FECHA(1:2) = WS-DIA AND REG-FECHA(3:2) = 
-              WS-MES AND REG-HORA = WS-HORA
+           IF REG-FECHA(1:2) = WS-INHA-DIA AND REG-FECHA(3:2) = 
+              WS-INHA-MES AND REG-HORA = WS-INHA-HORA
               MOVE 'I' TO REG-ESTADO
               REWRITE REG-CALENDARIO END-REWRITE
            END-IF.
 
-       1000-3-1-CONSULTAR-DIA.
-           PERFORM 999-ENCABEZADO-PAN
-           PERFORM 999-SOLICITAR-DIA
-           PERFORM 999-SOLICITAR-MES
-           PERFORM 999-ENCABEZADO-PAN
-           DISPLAY REG-SAL-DIA      LINE 06 POSITION 01
-           MOVE 0 TO WS-FIN-ARCHIVO
-           MOVE 7 TO LI
-           OPEN INPUT DATOSCAL
-           PERFORM 1000-3-1-1-LEER-DIA UNTIL WS-FIN-ARCHIVO = 1
-           CLOSE DATOSCAL
-           PERFORM 999-ENTER.
-
-       1000-3-1-1-LEER-DIA.
-           READ DATOSCAL AT END MOVE 1 TO WS-FIN-ARCHIVO
-                         NOT AT END PERFORM 1000-3-1-1-IMP-DIA
-           END-READ.
-
-       1000-3-1-1-IMP-DIA.
-           IF REG-FECHA(1:2) = WS-DIA AND REG-FECHA(3:2) = WS-MES
-             DISPLAY REG-FECHA(1:2)       LINE LI POSITION 11
-             DISPLAY '/'                  LINE LI POSITION 13   
-             DISPLAY REG-FECHA(3:2)       LINE LI POSITION 14
-             DISPLAY '/'                  LINE LI POSITION 16   
-             DISPLAY REG-FECHA(5:2)       LINE LI POSITION 17
-             DISPLAY REG-HORA             LINE LI POSITION 26
-             DISPLAY ':00'                LINE LI POSITION 28 
-             IF REG-ESTADO = 'I'
-               DISPLAY 'INHABILITADO'     LINE LI POSITION 40
-             END-IF
-             ADD 1 TO LI
-           END-IF.
-
-       999-SOLICITAR-HORA.
+       9999-SOLICITAR-HORA.
            PERFORM 999-ENCABEZADO-PAN
            DISPLAY 'SELLECCIONE LA HORA (06/20)'    LINE 06 POSITION 34
                    'HORA) '                         LINE 07 POSITION 10
-           MOVE ZEROS TO WS-HORA
-           PERFORM UNTIL WS-HORA > 5 AND < 21
-             ACCEPT WS-HORA                    LINE 07 POSITION 16
+           MOVE ZEROS TO WS-INHA-HORA
+           PERFORM UNTIL WS-INHA-HORA > 5 AND < 21
+             ACCEPT WS-INHA-HORA                    LINE 07 POSITION 16
            END-PERFORM.
 
        999-SOLICITAR-DIA.
            PERFORM 999-ENCABEZADO-PAN
            DISPLAY 'SELECCIONE EL DIA (1/30)'      LINE 06 POSITION 34
                    'DIA) '                         LINE 07 POSITION 10
-           MOVE ZEROS TO WS-DIA
-           PERFORM UNTIL WS-DIA > 0 AND < 31
-             ACCEPT WS-DIA                    LINE 07 POSITION 16
+           MOVE ZEROS TO WS-INHA-DIA
+           PERFORM UNTIL WS-INHA-DIA > 0 AND < 31
+             ACCEPT WS-INHA-DIA                    LINE 07 POSITION 16
            END-PERFORM.
 
        999-SOLICITAR-MES.
@@ -300,9 +260,9 @@
                    '11. NOVIEMBRE '                 LINE 11 POSITION 30
                    '12. DICIEMBRE '                 LINE 11 POSITION 50
                    'OPCION )      '                 LINE 13 POSITION 20
-           MOVE ZEROS TO WS-MES
-           PERFORM UNTIL WS-MES > 0 AND < 13
-             ACCEPT WS-MES                    LINE 13 POSITION 30
+           MOVE ZEROS TO WS-INHA-MES
+           PERFORM UNTIL WS-INHA-MES > 0 AND < 13
+             ACCEPT WS-INHA-MES                    LINE 13 POSITION 30
            END-PERFORM.
            
        999-ENCABEZADO-PAN.
