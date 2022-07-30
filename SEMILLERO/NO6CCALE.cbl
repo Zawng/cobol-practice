@@ -17,7 +17,7 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
       * ARCHIVO QUE GUARDARA LA INFORMACION DE LOS DIAS Y HORAS
-           SELECT DATOSCAL ASSIGN TO './FILES/CALENDARIO/DATOSCAL'
+           SELECT DATOSCAL ASSIGN TO PATH
            ORGANIZATION IS SEQUENTIAL
            ACCESS MODE IS SEQUENTIAL
            FILE STATUS IS VAR-ESTADO.
@@ -65,7 +65,9 @@
            88 NO-CREAR              VALUE 'N' 'n'.
        01  WS-MES-ACTUAL            PIC X(10) VALUE SPACES.
        01  WS-MENSAJE-CREAR-ARCHIVO PIC X(80) VALUE SPACES.
-
+       01  PATH                     PIC X(27) VALUE 
+                                    './FILES/CALENDARIO/'.
+       01  WS-PATH-FIX              PIC 9(02) VALUE 20.
 
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -98,10 +100,12 @@
        1000-1-CREA-ARCHIVO.
            PERFORM 999-ENCABEZADO-PAN
            PERFORM 1000-1-1-HALLAR-MES
-           DISPLAY WS-MENSAJE-CREAR-ARCHIVO         LINE 06 POSITION 01
+           DISPLAY WS-MENSAJE-CREAR-ARCHIVO         LINE 07 POSITION 01
+           DISPLAY 'SI EL ARCHIVO YA EXISTE, SE PERDERA LA INFORMACION'
+                                                    LINE 06 POSITION 01
            MOVE SPACES TO WS-CREAR
            PERFORM UNTIL SI-CREAR OR NO-CREAR
-               ACCEPT WS-CREAR                      LINE 06 POSITION 53
+               ACCEPT WS-CREAR                      LINE 07 POSITION 53
            END-PERFORM
            IF SI-CREAR
              OPEN OUTPUT DATOSCAL
@@ -113,25 +117,35 @@
 
        1000-1-1-HALLAR-MES.
            EVALUATE WS-FEC-SIS(3:2)
-               WHEN 01 MOVE 'ENERO'      TO WS-MES-ACTUAL
-               WHEN 02 MOVE 'FEBRERO'    TO WS-MES-ACTUAL
-               WHEN 03 MOVE 'MARZO'      TO WS-MES-ACTUAL
-               WHEN 04 MOVE 'ABRIL'      TO WS-MES-ACTUAL
-               WHEN 05 MOVE 'MAYO'       TO WS-MES-ACTUAL
-               WHEN 06 MOVE 'JUNIO'      TO WS-MES-ACTUAL
-               WHEN 07 MOVE 'JULIO'      TO WS-MES-ACTUAL
-               WHEN 08 MOVE 'AGOSTO'     TO WS-MES-ACTUAL
-               WHEN 09 MOVE 'SEPTIEMBRE' TO WS-MES-ACTUAL
-               WHEN 10 MOVE 'OCTUBRE'    TO WS-MES-ACTUAL
-               WHEN 11 MOVE 'NOVIEMBRE'  TO WS-MES-ACTUAL
-               WHEN 12 MOVE 'DICIEMBRE'  TO WS-MES-ACTUAL
+               WHEN 01 MOVE 'ENE'  TO WS-MES-ACTUAL
+               WHEN 02 MOVE 'FEB'  TO WS-MES-ACTUAL
+               WHEN 03 MOVE 'MAR'  TO WS-MES-ACTUAL
+               WHEN 04 MOVE 'ABR'  TO WS-MES-ACTUAL
+               WHEN 05 MOVE 'MAY'  TO WS-MES-ACTUAL
+               WHEN 06 MOVE 'JUN'  TO WS-MES-ACTUAL
+               WHEN 07 MOVE 'JUL'  TO WS-MES-ACTUAL
+               WHEN 08 MOVE 'AGO'  TO WS-MES-ACTUAL
+               WHEN 09 MOVE 'SEP'  TO WS-MES-ACTUAL
+               WHEN 10 MOVE 'OCT'  TO WS-MES-ACTUAL
+               WHEN 11 MOVE 'NOV'  TO WS-MES-ACTUAL
+               WHEN 12 MOVE 'DIC'  TO WS-MES-ACTUAL
            END-EVALUATE
+      *    CREAR MENSAJE CON EL RESPECTIVO MES ACTUAL
            STRING 'DESEA CREAR ARCHIVO PARA EL MES DE ' 
                                  DELIMITED BY SIZE
                    WS-MES-ACTUAL DELIMITED BY SPACE
                    ' (S/N): '    DELIMITED BY SIZE
                    INTO WS-MENSAJE-CREAR-ARCHIVO
+           END-STRING
+      *    CREAR NOMBRE DEL ARCHIVO CON EL MES ACTUAL
+           STRING 'D'             DELIMITED BY SIZE
+                  WS-MES-ACTUAL   DELIMITED BY SPACE
+                  '20'            DELIMITED BY SIZE
+                  WS-FEC-SIS(1:2) DELIMITED BY SIZE
+                  INTO PATH
+                  WITH POINTER WS-PATH-FIX
            END-STRING.
+               
 
        999-ENCABEZADO-PAN.
            DISPLAY CLEAR-SCREEN
