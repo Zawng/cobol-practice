@@ -18,7 +18,7 @@
        FILE-CONTROL.
       * ARCHIVO QUE GUARDARA LA INFORMACION DE LOS DIAS Y HORAS
            SELECT DATOSCAL ASSIGN TO './FILES/CALENDARIO/DATOSCAL'
-           ORGANIZATION IS LINE SEQUENTIAL
+           ORGANIZATION IS SEQUENTIAL
            ACCESS MODE IS SEQUENTIAL
            FILE STATUS IS VAR-ESTADO.
       *----------------------------------------------------------------*
@@ -59,10 +59,16 @@
            02 FILLER                PIC X(25) VALUE SPACES.
 
       *                           PROCESOS                             *
-       01  WS-OPC                   PIC 9(01) VALUE ZEROS.
        01  WS-CREAR                 PIC A(01) VALUE SPACES.
            88 SI-CREAR              VALUE 'S' 's'.
            88 NO-CREAR              VALUE 'N' 'n'.
+       
+       01  WS-FIN-ARCHIVO           PIC 9(01) VALUE ZEROS.
+       01  WS-OPC                   PIC 9(01) VALUE ZEROS.
+       01  WS-INHA                  PIC 9(01) VALUE ZEROS.
+       01  WS-INHA-HORA              PIC 9(02) VALUE ZEROS.  
+       01  WS-INHA-DIA              PIC 9(02) VALUE ZEROS.  
+       01  WS-INHA-MES              PIC 9(02) VALUE ZEROS.  
 
       * VARIABLES PARA EL FOR ANIDADO DE 3 NIVELES, SIN VALIDAR EL AÑO 
       * YA QUE SERÁ TOMATDO AUTOMÁTICAMENTE POR EL SISTEMA
@@ -78,28 +84,26 @@
       *                           PROCEDURE                            *
       *----------------------------------------------------------------*
        PROCEDURE DIVISION.
-      * RUTINA DE FECHAS
-           PERFORM 1000-MENU-PRINCIPAL
+           PERFORM 1000-MENU-PRINCIPAL UNTIL WS-OPC = 4
            STOP RUN.
 
        1000-MENU-PRINCIPAL.
            PERFORM 999-ENCABEZADO-PAN
-           DISPLAY 'MENU PRINCIPAL       '          LINE 06 POSITION 33
-                   '1. CREAR ARCHIVO     '          LINE 08 POSITION 10
-                   '2. INHABILITAR'                 LINE 09 POSITION 10
-                   '3. CONSULTAS         '          LINE 10 POSITION 10
-                   '4. SALIR             '          LINE 11 POSITION 10
-                   'OPCION ) '                      LINE 12 POSITION 20
+           DISPLAY 'MENU PRINCIPAL            '     LINE 06 POSITION 33
+                   '1. CREAR ARCHIVO          '     LINE 08 POSITION 10
+                   '2. MODIFICAR - INHABILITAR'     LINE 09 POSITION 10
+                   '3. CONSULTAS              '     LINE 10 POSITION 10
+                   '4. SALIR                  '     LINE 11 POSITION 10
+                   'OPCION )                  '     LINE 12 POSITION 20
            MOVE ZEROS TO WS-OPC
            PERFORM UNTIL WS-OPC > 0 AND < 5
                ACCEPT WS-OPC                        LINE 12 POSITION 30
            END-PERFORM
            EVALUATE WS-OPC
                WHEN 1 PERFORM 1000-1-CREA-ARCHIVO
-      *        WHEN 2 PERFORM 1000-2-MENU-INHABILITAR
+               WHEN 2 PERFORM 1000-2-MENU-INHABILITAR
       *        WHEN 3 PERFORM 1000-3-MENU-CONSULTAS
            END-EVALUATE.
-
 
        1000-1-CREA-ARCHIVO.
            PERFORM 999-ENCABEZADO-PAN
@@ -132,6 +136,161 @@
                  WRITE REG-CALENDARIO
            END-PERFORM.
 
+       1000-2-MENU-INHABILITAR.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'INHABILITAR'                    LINE 06 POSITION 34
+                   '1. MES     '                    LINE 08 POSITION 10
+                   '2. DIA     '                    LINE 09 POSITION 10
+                   '3. HORAS   '                    LINE 10 POSITION 10
+                   '4. SALIR   '                    LINE 11 POSITION 10
+                   'OPCION )   '                    LINE 12 POSITION 20
+           MOVE ZEROS TO WS-INHA
+           PERFORM UNTIL WS-INHA > 0 AND < 5
+               ACCEPT WS-INHA                       LINE 12 POSITION 30
+           END-PERFORM
+           EVALUATE WS-INHA
+               WHEN 1 PERFORM 1000-2-1-INHABILITAR-MES
+               WHEN 2 PERFORM 1000-2-2-INHABILITAR-DIA
+               WHEN 3 PERFORM 1000-2-3-INHABILITAR-HORAS
+           END-EVALUATE.
+
+       1000-2-1-INHABILITAR-MES.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'SELECCIONE EL MES'              LINE 06 POSITION 34
+                   '01. ENERO     '                 LINE 08 POSITION 10
+                   '02. FEBRERO   '                 LINE 09 POSITION 10
+                   '03. MARZO     '                 LINE 10 POSITION 10
+                   '04. ABRIL     '                 LINE 11 POSITION 10
+                   '05. MAYO      '                 LINE 12 POSITION 10
+                   '06. JUNIO     '                 LINE 13 POSITION 10
+                   '07. JULIO     '                 LINE 14 POSITION 10
+                   '08. AGOSTO    '                 LINE 15 POSITION 10
+                   '09. SEPTIEMBRE'                 LINE 16 POSITION 10
+                   '10. OCTUBRE   '                 LINE 17 POSITION 10
+                   '11. NOVIEMBRE '                 LINE 18 POSITION 10
+                   '12. DICIEMBRE '                 LINE 19 POSITION 10
+                   'OPCION )      '                 LINE 20 POSITION 20
+           MOVE ZEROS TO WS-INHA-MES
+           PERFORM UNTIL WS-INHA-MES > 0 AND < 13
+             ACCEPT WS-INHA-MES                    LINE 20 POSITION 30
+           END-PERFORM
+           MOVE 0 TO WS-FIN-ARCHIVO
+           OPEN I-O DATOSCAL
+           PERFORM 1000-2-1-1-LEER-ARCHIVO UNTIL WS-FIN-ARCHIVO = 1
+           CLOSE DATOSCAL
+           DISPLAY 'REGISTROS ACTUALIZADOS CON EXITO'
+                                                    LINE 22 POSITION 24
+           PERFORM 999-ENTER.
+
+       1000-2-1-1-LEER-ARCHIVO.
+           READ DATOSCAL AT END MOVE 1 TO WS-FIN-ARCHIVO
+                         NOT AT END PERFORM 1000-2-1-2-MODIFICAR
+           END-READ.
+
+       1000-2-1-2-MODIFICAR.
+           IF REG-FECHA(3:2) = WS-INHA-MES
+             MOVE 'I' TO REG-ESTADO
+             REWRITE REG-CALENDARIO END-REWRITE
+           END-IF.
+ 
+       1000-2-2-INHABILITAR-DIA.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'SELECCIONE EL DIA (1/30)'      LINE 06 POSITION 34
+                   'DIA) '                         LINE 07 POSITION 10
+           MOVE ZEROS TO WS-INHA-DIA
+           PERFORM UNTIL WS-INHA-DIA > 0 AND < 31
+             ACCEPT WS-INHA-DIA                    LINE 07 POSITION 16
+           END-PERFORM
+           DISPLAY 'SELECCIONE EL MES'              LINE 09 POSITION 34
+                   '01. ENERO     '                 LINE 10 POSITION 10
+                   '02. FEBRERO   '                 LINE 10 POSITION 60
+                   '03. MARZO     '                 LINE 11 POSITION 10
+                   '04. ABRIL     '                 LINE 11 POSITION 60
+                   '05. MAYO      '                 LINE 12 POSITION 10
+                   '06. JUNIO     '                 LINE 12 POSITION 60
+                   '07. JULIO     '                 LINE 13 POSITION 10
+                   '08. AGOSTO    '                 LINE 13 POSITION 60
+                   '09. SEPTIEMBRE'                 LINE 14 POSITION 10
+                   '10. OCTUBRE   '                 LINE 14 POSITION 60
+                   '11. NOVIEMBRE '                 LINE 15 POSITION 10
+                   '12. DICIEMBRE '                 LINE 15 POSITION 60
+                   'MES )         '                 LINE 17 POSITION 10
+           MOVE ZEROS TO WS-INHA-MES
+           PERFORM UNTIL WS-INHA-MES > 0 AND < 13
+             ACCEPT WS-INHA-MES                     LINE 17 POSITION 16
+           END-PERFORM
+           MOVE 0 TO WS-FIN-ARCHIVO
+           OPEN I-O DATOSCAL
+           PERFORM 1000-2-2-1-LEER-ARCHIVO UNTIL WS-FIN-ARCHIVO = 1
+           CLOSE DATOSCAL
+           DISPLAY 'REGISTROS ACTUALIZADOS CON EXITO'
+                                                    LINE 22 POSITION 24
+           PERFORM 999-ENTER.
+
+           1000-2-2-1-LEER-ARCHIVO.
+           READ DATOSCAL AT END MOVE 1 TO WS-FIN-ARCHIVO
+                         NOT AT END PERFORM 1000-2-2-2-MODIFICAR
+           END-READ.
+
+       1000-2-2-2-MODIFICAR.
+           IF REG-FECHA(1:2) = WS-INHA-DIA AND REG-FECHA(3:2) = 
+                                                       WS-INHA-MES
+             MOVE 'I' TO REG-ESTADO
+             REWRITE REG-CALENDARIO END-REWRITE
+           END-IF.
+
+       1000-2-3-INHABILITAR-HORAS.
+           PERFORM 999-ENCABEZADO-PAN
+           DISPLAY 'SELLECCIONE LA HORA (06/20)'    LINE 06 POSITION 34
+                   'HORA) '                         LINE 07 POSITION 10
+           MOVE ZEROS TO WS-INHA-HORA
+           PERFORM UNTIL WS-INHA-HORA > 5 AND < 21
+             ACCEPT WS-INHA-HORA                    LINE 07 POSITION 16
+           END-PERFORM
+           DISPLAY 'SELECCIONE EL DIA (1/30)'       LINE 09 POSITION 34
+                   'DIA) '                          LINE 10 POSITION 10
+           MOVE ZEROS TO WS-INHA-DIA
+           PERFORM UNTIL WS-INHA-DIA > 0 AND < 31
+             ACCEPT WS-INHA-DIA                     LINE 10 POSITION 16
+           END-PERFORM
+           DISPLAY 'SELECCIONE EL MES'              LINE 11 POSITION 34
+                   '01. ENERO     '                 LINE 12 POSITION 10
+                   '02. FEBRERO   '                 LINE 12 POSITION 60
+                   '03. MARZO     '                 LINE 13 POSITION 10
+                   '04. ABRIL     '                 LINE 13 POSITION 60
+                   '05. MAYO      '                 LINE 14 POSITION 10
+                   '06. JUNIO     '                 LINE 14 POSITION 60
+                   '07. JULIO     '                 LINE 15 POSITION 10
+                   '08. AGOSTO    '                 LINE 15 POSITION 60
+                   '09. SEPTIEMBRE'                 LINE 16 POSITION 10
+                   '10. OCTUBRE   '                 LINE 16 POSITION 60
+                   '11. NOVIEMBRE '                 LINE 17 POSITION 10
+                   '12. DICIEMBRE '                 LINE 17 POSITION 60
+                   'MES )         '                 LINE 18 POSITION 10
+           MOVE ZEROS TO WS-INHA-MES
+           PERFORM UNTIL WS-INHA-MES > 0 AND < 13
+             ACCEPT WS-INHA-MES                     LINE 18 POSITION 16
+           END-PERFORM
+           MOVE 0 TO WS-FIN-ARCHIVO
+           OPEN I-O DATOSCAL
+           PERFORM 1000-2-3-1-LEER-ARCHIVO UNTIL WS-FIN-ARCHIVO = 1
+           CLOSE DATOSCAL
+           DISPLAY 'REGISTROS ACTUALIZADOS CON EXITO'
+                                                    LINE 22 POSITION 24
+           PERFORM 999-ENTER.
+
+           1000-2-3-1-LEER-ARCHIVO.
+           READ DATOSCAL AT END MOVE 1 TO WS-FIN-ARCHIVO
+                         NOT AT END PERFORM 1000-2-3-2-MODIFICAR
+           END-READ.
+
+       1000-2-3-2-MODIFICAR.
+           IF REG-FECHA(1:2) = WS-INHA-DIA AND REG-FECHA(3:2) = 
+              WS-INHA-MES AND REG-HORA = WS-INHA-HORA
+             MOVE 'I' TO REG-ESTADO
+             REWRITE REG-CALENDARIO END-REWRITE
+           END-IF.
+           
        999-ENCABEZADO-PAN.
            DISPLAY CLEAR-SCREEN
       * TOMAR FECHA DEL SISTEMA Y MODIFICAR EL FORMATO SOLICITADO
