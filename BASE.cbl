@@ -2,8 +2,8 @@
       *                           IDENTIFICATION                       *
       * OBJETIVOS: VALIDAR EL CALENDARIO, NO PUEDEN HABER 2 FECHAS 
       * IGUALES
-      * FECHA: (ddmmaa) PIC 9(06)
-      * HORA: (HH)      PIC 9(02) 6(am 20 pm)
+      * FECHA: (DDMMAA)                       PIC 9(06)
+      * HORA: (HH)                            PIC 9(02) 6(am 20 pm)
       * ESTADO  A (H: HABIL, I(INHABIL))      PIC A(01)
       *----------------------------------------------------------------*
        ID DIVISION.
