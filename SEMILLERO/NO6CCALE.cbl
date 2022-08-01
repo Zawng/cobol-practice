@@ -82,9 +82,18 @@
       * YA QUE SERÁ TOMATDO AUTOMÁTICAMENTE POR EL SISTEMA
       * M: MESES, D: DIAS, H: HORAS.
        01  M                        PIC 9(02) VALUE ZEROS.
+           88 M-30                  VALUE '04' '06' '09' '11'.
+           88 M-31                  VALUE '01' '03' '05' '07' '08' '10'
+                                    '12'.
+           88 M-28                  VALUE '02'.
        01  D                        PIC 9(02) VALUE ZEROS.
        01  H                        PIC 9(02) VALUE ZEROS. 
        01  LI                       PIC 9(02) VALUE ZEROS.
+
+       01  WS-M                     PIC 9(02) VALUE ZEROS.
+       01  ANIO                     PIC 9(04) VALUE ZEROS.
+       01  WS-R                     PIC 9(02) VALUE ZEROS.
+       01  WS-RTA                   PIC 9(02) VALUE ZEROS.
 
        SCREEN SECTION.
        01  CLEAR-SCREEN BLANK SCREEN.
@@ -134,8 +143,27 @@
            END-IF.
 
        1000-1-1-GENERAR-INFORMACION.
-           PERFORM VARYING M FROM 01 BY 01 UNTIL M > 12
-             AFTER D FROM 01 BY 01 UNTIL D > 30
+           PERFORM 1000-1-1-1-MESES VARYING M FROM 01 BY 01 
+                   UNTIL M > 12.
+
+       1000-1-1-1-MESES.
+           IF M-30 
+             MOVE 30 TO WS-M
+           ELSE
+             IF M-31
+               MOVE 31 TO WS-M
+             ELSE
+               MOVE 20                 TO ANIO(1:2)
+               MOVE WS-FEC-SIS(1:2)    TO ANIO(3:2)
+               DIVIDE ANIO BY 4 GIVING WS-RTA REMAINDER WS-R END-DIVIDE
+               IF WS-R = 0
+                 MOVE 29 TO WS-M
+               ELSE
+                 MOVE 28 TO WS-M
+               END-IF
+             END-IF
+           END-IF
+           PERFORM VARYING D FROM 01 BY 01 UNTIL D > WS-M
                AFTER H FROM 06 BY 01 UNTIL H > 20
                  MOVE D               TO REG-FECHA(1:2)
                  MOVE M               TO REG-FECHA(3:2)
@@ -143,7 +171,7 @@
                  MOVE H               TO REG-HORA
                  MOVE SPACES          TO REG-ESTADO
                  WRITE REG-CALENDARIO
-           END-PERFORM.
+           END-PERFORM. 
 
        1000-2-MENU-INHABILITAR.
            PERFORM 999-ENCABEZADO-PAN
